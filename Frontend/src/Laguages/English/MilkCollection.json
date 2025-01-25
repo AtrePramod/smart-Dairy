@@ -1,0 +1,24 @@
+{
+  "m-complete-coll": "Complete Milk Collection",
+  "m-milk-coll-report": "Milk Collection Report",
+  "m-coll-list": "Milk Collection List",
+  "m-milkcoll": "Milk Collection",
+
+  "m-reports": "Reports",
+  "m-count": "Sample Count",
+  "m-t-liters": "Total Liters",
+  "m-cust-code": "Code",
+  "m-cust-name": "Customer Name",
+  "m-sample-no": "Smaple No",
+  "m-s-milk-type": "Select Milk Type",
+  "m-s-date": "Date",
+  "m-s-shift": "Shift",
+
+  "m-btn-cancel": "Cancel",
+  "m-btn-save": "Save",
+  "m-btn-reset": "Reset",
+  "m-btn-saving": "Saving...",
+
+  "m-d-excel": "Excel",
+  "m-d-show": "Show"
+}

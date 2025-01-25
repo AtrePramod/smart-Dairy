@@ -1,0 +1,26 @@
+{
+  "pp-title": "Customer Profile",
+  "p-code": "Code",
+  "p-name": "Name",
+  "p-backname": "Bank Name",
+  "p-bank-acno": "Bank Account No",
+  "p-bank-ifsc": "Bank IFSC",
+  "p-farmer-id": "Farmer Id",
+  "p-mobile": "Mobile No",
+  "p-adhhar-no": "Adhhar No",
+
+  "nv-dash": "Dashboard",
+  "nv-milk-coll": "Milk Collection",
+  "nv-pay": "Payment",
+  "nv-cattel-feed": "Cattel feeds",
+  "nv-deduction": "Deduction",
+  "nv-animal": "Animal",
+  "nv-profile": "Profile",
+  "description": "This is a multi-language React app.",
+
+  "d-sun-info": "Current Payment slot info",
+
+  "mc-title": "Milk Collection",
+
+  "pay-title": "Payment Information"
+}

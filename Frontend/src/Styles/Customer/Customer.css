@@ -1,0 +1,241 @@
+.customer-container {
+  background-color: #fcffff;
+}
+/* .customer-nav-view-container{
+  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+} */
+.center-selection-div {
+  border-radius: 0 0 25px 25px;
+  background-color: var(--main-bg-color);
+}
+.center-selection-div .dairyname {
+  color: #fff;
+  font-size: 14px;
+}
+.select-div .icons {
+  font-size: 20px;
+  color: #fff;
+}
+.center-selection-div .centers {
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.nav-menu-container .menu-icon-btn {
+  border: 1px solid var(--main-bg-color);
+  background-color: var(--bg-sky-color);
+  border-radius: 8px;
+}
+/* .menu-icon-btn .menu-text-div span {
+  font-size: 10px;
+} */
+
+.lang-selector-btn {
+  border: none;
+  color: #fff;
+  background-color: transparent;
+}
+.lang-selector-btn:focus {
+  outline: none;
+}
+.lang-selector-btn .opts {
+  color: #fff;
+  background-color: #9ba7ed;
+  outline: none;
+}
+
+/* .............................................. */
+/* navliks css*/
+/* .............................................. */
+
+.menu-icon-btn .icon-div .icon{
+  font-size: 30px;
+}
+/* .............................................. */
+/* Dropdown button css*/
+/* .............................................. */
+.select-container:focus {
+  outline: none;
+}
+
+.dropdown-btn {
+  width: 80px;
+  padding: 5px;
+  /* border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f0f0f0; */
+  color: #fff;
+  background-color: rgb(183, 146, 230);
+  cursor: pointer;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 80px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: rgb(183, 146, 230);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+/* Dropdown items */
+.dropdown-menu li {
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+/* Dropdown hover effect */
+.dropdown-menu li:hover {
+  background-color: #ddd;
+}
+
+/* .............................................. */
+/* navlink views css end */
+/* .............................................. */
+
+.cust-navbar {
+  background-color: var(--main-bg-color);
+}
+.logo-text {
+  letter-spacing: 1px;
+  color: #fff;
+}
+.navlinks {
+  display: contents;
+}
+.close {
+  width: 80%;
+}
+.open {
+  position: relative;
+  width: 80%;
+}
+.navlinks a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #dadada;
+  transition: all 0.3s ease;
+}
+.sidebar-list-item {
+  display: flex;
+}
+.sidebar-list-item span {
+  margin: 0 10px;
+}
+.navlinks a:hover {
+  color: #fff;
+}
+.menu-btn {
+  display: none;
+  font-size: 20px;
+  color: #fff;
+}
+.logout-btn .icon {
+  color: #fff;
+  font-size: 20px;
+}
+
+.back-icon {
+  width: 50px;
+  font-size: 28px;
+  color: #000;
+  margin-right: 15px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.icon-div .icon {
+  color: var(--main-bg-color);
+  font-size: 22px;
+}
+
+.menu-icon-btn:hover {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+.logout-confirmation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.logout-confirmation p {
+  margin-bottom: 20px;
+}
+
+.logout-confirmation .lc-btns {
+  margin: 0 10px;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.lc-btn-div .btn-y {
+  color: #ff2d2d;
+}
+.lc-btn-div .btn-n {
+  color: #20a32b;
+}
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .customer-container .cust-navbar {
+    width: 100%;
+    margin: 0;
+  }
+  .menu-btn {
+    font-size: 22px;
+    margin-right: 10px;
+    color: #fff;
+  }
+  .cust-navbar .logo {
+    width: 30%;
+  }
+  .open-btn {
+    display: block;
+  }
+  .close-btn {
+    display: block;
+    margin: 30px 20px;
+  }
+  .navlinks {
+    flex-direction: column;
+  }
+  .navlinks a {
+    margin-bottom: 15px;
+  }
+  .sidebar-list-item span {
+    margin: 0 10px;
+  }
+  .open {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: var(--main-bg-color);
+    transition: all 0.2s ease;
+  }
+  .close {
+    display: none;
+  }
+}

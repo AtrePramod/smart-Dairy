@@ -1,0 +1,36 @@
+.data-conatiner {
+  height: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.milk-collection-chart {
+  margin-top: 15px;
+}
+.cust-dashboard-charts .milk-collection-chart {
+  height: 300px;
+}
+
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .cust-dashboard-information .menu-title-div,
+  .cust-dashboard-information .cust-dashboard-data {
+    width: 100%;
+    margin: 0;
+  }
+  .cust-dashboard-information .cust-dashboard-charts {
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .cust-dashboard-charts .milk-collection-chart {
+    width: 100%;
+    height: 220px;
+  }
+}

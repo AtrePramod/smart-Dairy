@@ -1,0 +1,30 @@
+@media screen and (max-width: 769px) {
+  .rate-chart-master-container .select-ratechart-container,
+  .rate-chart-master-container .save-ratechart-container {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .rate-chart-master-container {
+    flex-direction: column;
+    height: auto;
+  }
+  .rate-chart-master-container .select-ratechart-container {
+    width: 100%;
+    min-height: 70%;
+  }
+  .rate-chart-master-container .save-ratechart-container {
+    width: 100%;
+    min-height: 100%;
+  }
+  .save-ratechart-container .previous-rate-chart-container {
+    min-height: 50%;
+  }
+  .apphome-nav-views .rate-chart-setting-div {
+    min-height: 65%;
+  }
+  .rate-chart-div .rate-chart-row-value {
+    padding: 5px 0;
+  }
+}

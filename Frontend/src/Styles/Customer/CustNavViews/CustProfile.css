@@ -1,0 +1,48 @@
+/* .cust-profile-container {
+ background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+} */
+
+.user-details h2 {
+  margin-bottom: 10px;
+}
+.buttons-div {
+  margin-bottom: 10px;
+}
+.profile-title-div {
+  padding-bottom: 10px;
+  border-radius: 0 0 20px 20px;
+  background-color: var(--main-bg-color);
+}
+.profile-bg {
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  border-radius: 53px;
+  background: transparent;
+  border: 3px solid #ffe4c4;
+}
+.profile-bg1 {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+  border: 2px solid #e78916;
+  background: transparent;
+  z-index: 10;
+}
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .cust-profile-container .menu-title-div,
+  .cust-profile-container .user-info-container {
+    width: 100%;
+    margin: 0;
+  }
+}

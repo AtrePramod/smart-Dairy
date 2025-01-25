@@ -1,0 +1,57 @@
+.content-titles-div,
+.content-total-value-div {
+  background: var(--bg-gray-color);
+}
+
+.custmize-report-div {
+  margin-bottom: 10px;
+}
+
+.save-btn-btn {
+  padding: 5px 10px;
+  background-color: var(--main-bg-color);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+.save-btn-btn:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.report-data-container {
+  max-height: 90%;
+  overflow-y: scroll;
+}
+
+.sidebar-list-item {
+  font-size: 14px;
+}
+.selected {
+  padding: 10px;
+  background: #ddbbb5;
+}
+/* ................................................. */
+/* Collection Reports css........................... */
+/* ................................................. */
+.custmize-report-div {
+  border: none;
+  background-color: var(--bg-gray-color);
+}
+.cl-icon {
+  color: #531096;
+}
+.custmize-report-div .custom-select {
+  margin-left: 10px;
+  border: none;
+  /* border-radius: 6px; */
+  background-color: transparent;
+}
+
+.content-total-value-div {
+  border-radius: 0 0 6px 6px;
+}
+/* .content-titles-div{
+  border-radius: 0 0 8px 8px;
+} */

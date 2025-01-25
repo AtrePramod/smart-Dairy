@@ -1,0 +1,118 @@
+/* Data table css */
+.Milk-report-heading {
+  overflow-x: auto;
+}
+.milkdata-headings-div {
+  min-width: 1000px;
+  position: sticky;
+  top: 0;
+  background-color: #17acc0;
+  padding: 5px 0;
+}
+
+/* .Milkcollection-container .master-and-buttons-div .download-option-btn-div {
+  display: block;
+  width: 100%;
+  flex-direction: row;
+} */
+
+.Milkcollection-container .download-option-btn-div-426 {
+  display: none;
+}
+.fillter-conditions-div1{
+  margin-bottom: 10px;
+}
+
+.fillter-data-container .fitter-hide-show-container {
+  min-height: fit-content;
+}
+
+@media screen and (max-width: 426px) {
+  .Milkcollection-container {
+    height: auto;
+  }
+
+  .Milkcollection-container .fillter-data-container {
+    min-height: fit-content;
+    padding: 5px;
+  }
+  .fillter-data-container .fillter-checkbox-container {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .fillter-data-container .fillter-checkbox-container .filter-check {
+    height: fit-content;
+  }
+
+  .Milkcollection-container .Milk-collection-report-container {
+    min-height: 90%;
+  }
+
+  .master-and-buttons-div .custmize-report-div {
+    width: 60%;
+    padding: 10px 0;
+    height: fit-content;
+  }
+
+  .master-and-buttons-div .download-option-btn-div {
+    width: 100%;
+  }
+
+  .fillter-data-container .fitter-hide-show-container .hided-conatiner-div {
+    min-height: 80%;
+  }
+
+  .fitter-hide-show-container .fillter-conditions-div {
+    min-height: 20%;
+    flex-direction: column;
+  }
+
+  .fitter-hide-show-container .fillter-conditions-div1 {
+    min-height: 60%;
+    flex-direction: column;
+    padding: 0;
+    margin-bottom: 0;
+    justify-content: space-between;
+  }
+
+  .fillter-data-container .master-and-buttons-div {
+    flex-direction: row;
+  }
+
+  .fillter-conditions-div .custmoer-number-no,
+  .fillter-conditions-div .days-selection-div,
+  .fillter-conditions-div1 .filter-condition-divs {
+    width: 100%;
+    padding: 0;
+    margin-top: 5px;
+    justify-content: space-between;
+  }
+
+  .master-and-buttons-div .download-option-btn-div {
+    display: none;
+  }
+
+  .Milkcollection-container .download-option-btn-div-426 {
+    display: inline-flex;
+    justify-content: flex-end;
+  }
+  .download-option-btn-div-426 .w-btn {
+    margin: 0 10px;
+  }
+
+  /* Data table css */
+  .Milk-report-heading {
+    overflow-x: auto;
+  }
+  .milkdata-headings-div {
+    min-width: 1000px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+    padding: 5px 0;
+  }
+  .milkdata-div {
+    min-width: 1000px;
+  }
+}

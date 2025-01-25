@@ -1,0 +1,164 @@
+/* Customer List Scrollable css */
+.customer-list-table {
+  overflow-x: auto;
+}
+.data-headings-div {
+  min-width: 1900px;
+  position: sticky;
+  top: 0;
+  background-color: #17acc0;
+  padding: 5px 0;
+}
+.data-values-div {
+  min-width: 1900px;
+}
+
+.toggle-button {
+  padding: 5px 10px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button.on {
+  background-color: #4caf50;
+  color: white;
+}
+
+.toggle-button.off {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Customer List Scrollable css */
+
+/* ------------------------------------------ */
+/* RESPONSIVE CSS --------------------------- */
+/* ------------------------------------------ */
+
+/* Customer List Scrollable Responsive css */
+@media screen and (max-width: 426px) {
+  .data-headings-div {
+    min-width: 1200px;
+  }
+  .data-values-div {
+    min-width: 1200px;
+  }
+}
+/* Customer List Scrollable Responsive css end */
+
+/* Create Customer Responsive Css */
+@media screen and (max-width: 769px) {
+  .toggle-button {
+    padding: 5px 10px;
+    font-size: 8px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  /* .cust-details-setting-div {
+    padding: 5px;
+    contact-details-div
+  } */
+  .cust-details-setting-div {
+    max-height: 100%;
+    overflow-y: scroll;
+    flex-direction: column;
+  }
+  .cust-details-setting-div .customer-details-container,
+  .cust-details-setting-div .cust-data-settings {
+    width: 100%;
+  }
+
+  .customer-details-container .cust-div {
+    height: 20%;
+  }
+  .customer-details-container .details-div,
+  .cust-data-settings .details-div {
+    padding: 0 5px;
+  }
+  .customer-details-container .label-text,
+  .cust-data-settings .label-text {
+    padding: 0 5px;
+  }
+  .cust-data-settings .details-div {
+    width: 50%;
+  }
+  .cust-details-setting-div .cust-data-settings {
+    min-height: 65%;
+  }
+
+  .customer-details-container .title-container .sub-heading,
+  .cust-data-settings .sub-heading {
+    margin-bottom: 5px;
+    padding: 0;
+  }
+
+  .toggle-button {
+    padding: 5px 8px;
+    font-size: 8px;
+  }
+  .data-headings-div {
+    min-width: 1600px;
+    position: sticky;
+    top: 0;
+    background-color: #17acc0;
+  }
+  .data-values-div {
+    min-width: 1600px;
+  }
+}
+/* Create Customer Responsive Css end */
+
+@media screen and (max-width: 426px) {
+  .cust-details-setting-di .customer-details-container .info-text {
+    margin: 5px 0;
+  }
+  .cust-details-setting-div .customer-details-container {
+    height: auto;
+  }
+  .customer-details-container .cust-details-div,
+  .customer-details-container .contact-details-div,
+  .customer-details-container .address-details,
+  .customer-details-container .milk-details-div,
+  .customer-details-container .Bank-details-div {
+    height: auto;
+    flex-wrap: wrap;
+    flex: 1 1 100px;
+  }
+  .cust-details-div .mcname-details-div,
+  .cust-details-div .cname-details-div {
+    width: 100%;
+  }
+  .contact-details-div .mobile-details-div,
+  .contact-details-div .Aadhhar-details-div,
+  .contact-details-div .caste-details-div,
+  .contact-details-div .gender-details-div {
+    width: 50%;
+  }
+
+  .address-details .city-details-div,
+  .address-details .tehsil-details-div,
+  .address-details .dist-details-div,
+  .address-details .pincode-details-div {
+    width: 50%;
+  }
+
+  .milk-details-div .milk-type-details-div,
+  .milk-details-div .ratechart-details-div {
+    width: 50%;
+  }
+  .milk-details-div .farmerid-details-div {
+    width: 100%;
+  }
+  .Bank-details-div .bankname-details-div {
+    width: 100%;
+  }
+  .Bank-details-div .acc-details-div,
+  .Bank-details-div .ifsc-details-div {
+    width: 50%;
+  }
+}

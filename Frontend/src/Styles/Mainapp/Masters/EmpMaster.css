@@ -1,0 +1,34 @@
+@media screen and (max-width: 769px) {
+  .create-emp-container,
+  .emp-list-container {
+    width: 70%;
+  }
+  .button-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .customer-views {
+    padding: 5px;
+  }
+  .Employee-views {
+    padding: 10px;
+    min-height: 100%;
+  }
+  .Employee-views .create-emp-container {
+    width: 100%;
+    min-height: -webkit-fill-available;
+  }
+  .Employee-views .emp-list-container {
+    width: 100%;
+    height: 90%;
+  }
+  .button-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+}

@@ -1,0 +1,57 @@
+.home-container {
+  height: 95vh;
+}
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.img-container {
+  background-image: url("../../assets/cow-man-milk.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.nointernet-screen .first-text {
+  font-size: 72px;
+  font-weight: 600;
+  color: #7bf8ee;
+}
+.nointernet-screen .second-text {
+  font-size: 26px;
+  font-weight: 600;
+  color: #7bf8ee;
+}
+.nointernet-screen .p-text {
+  font-size: 12px;
+  width: 60%;
+  text-align: center;
+  color: #fafafa;
+}
+
+/* Responsive css*/
+
+@media screen and (max-width: 426px) {
+  /* .home-container {
+    flex-direction: column;
+  } */
+  .home-container .img-info-container {
+    width: 100%;
+    height: 100%;
+  }
+  /* .home-container .img-info-container {
+    width: 100%;
+    height: 100px;
+  } */
+  .home-container .login-register-container {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.275);
+  }
+}

@@ -1,0 +1,30 @@
+.details-container {
+  width: 20%;
+}
+
+.amt-info-div {
+  border-bottom: 1px solid black;
+  background-color: #f7eddf;
+}
+
+/*--------Mobile Screen CSS-------*/
+@media screen and (max-width: 426px) {
+  .milk-main-details {
+    height: 20%;
+  }
+
+  .milk-main-details .details-container {
+    width: 30%;
+    padding: 10px;
+  }
+
+  .time-wise-milk-collection {
+    flex-direction: column;
+  }
+  .time-wise-milk-collection .morning-milk-collection,
+  .time-wise-milk-collection .evening-milk-collection {
+    width: 100%;
+    min-height: 400px;
+    margin-bottom: 10px;
+  }
+}

@@ -1,0 +1,40 @@
+
+@media screen and (max-width: 769px) {
+  .rate-chart-master-container .select-ratechart-container,
+  .rate-chart-master-container .save-ratechart-container {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .rate-chart-master-container {
+    flex-direction: column;
+    max-height: 100%;
+    overflow-y: scroll;
+  }
+  .rate-chart-master-container .select-ratechart-container {
+    width: 100%;
+    min-height: 90%;
+  }
+
+  .rate-chart-master-container .save-ratechart-container {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  .select-time-animal-type .select-time, 
+  .select-time-animal-type .select-animal-type {
+    width: 45%;
+    flex-direction: column;
+  }
+  .select-time .label-text,
+  .select-time .data,
+  .select-animal-type .label-text,
+  .select-animal-type .data{
+    width: 100%;
+  }
+  .save-ratechart-container .button-div button{
+    margin: 10px;
+  }
+
+}

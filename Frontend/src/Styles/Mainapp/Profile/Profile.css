@@ -1,0 +1,5 @@
+@media screen and (max-width: 426px) {
+  .user-profile-container .user-details-container {
+    width: 100%;
+  }
+}

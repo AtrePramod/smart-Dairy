@@ -1,0 +1,8 @@
+@media screen and (max-width: 426px) {
+  .coll-inputs-div .col-inputs-div {
+    width: 100%;
+  }
+  .collection-settings-form-div .button-container{
+    padding:0;
+  }
+}

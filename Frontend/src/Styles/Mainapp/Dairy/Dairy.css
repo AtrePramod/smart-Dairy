@@ -1,0 +1,57 @@
+/* --------------------------------------------------------- */
+/* Dairy Information Responsive css ------------------------ */
+/* --------------------------------------------------------- */
+
+@media screen and (max-width: 769px) {
+  .dairy-main-container .dairy-information-div {
+    width: 80%;
+    height: 85%;
+  }
+  .dairy-information-div {
+    width: 70%;
+    height: 90%;
+  }
+  .dairy-name-div {
+    height: 15%;
+    flex-direction: column;
+  }
+
+  .dairy-name-div .label-text,
+  .dairy-name-div .data {
+    width: 100%;
+  }
+  .register-date-no-div,
+  .gst-mobile-div,
+  .address-div {
+    height: 15%;
+  }
+  .regi-no-div,
+  .gst-div,
+  .add-div {
+    width: 45%;
+    height: 20%;
+    flex-direction: column;
+  }
+  .regi-no-div .label-text,
+  .gst-div .label-text,
+  .add-div .label-text,
+  .regi-no-div .data,
+  .gst-div .data,
+  .add-div .data {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 426px) {
+  .dairy-main-container {
+    padding: 5px;
+  }
+  .dairy-main-container .dairy-information-div {
+    width: 100%;
+    height: 80%;
+  }
+  
+}
+
+/* --------------------------------------------------------- */
+/* Dairy Initial Information Responsive css ---------------- */
+/* --------------------------------------------------------- */

@@ -1,0 +1,27 @@
+.title-type-conatiner {
+  background-color: var(--main-bg-color);
+  padding-bottom: 15px;
+  border-radius: 0 0 20px 20px;
+}
+
+.report-type-container a {
+  color: #fff;
+}
+
+.report-type-container {
+  color: #fff;
+  background: var(--bg-nav-color);
+}
+
+/* .............................................. */
+/* Responsive css */
+/* .............................................. */
+
+@media screen and (max-width: 426px) {
+  .cust-milk-collection-info .menu-title-div,
+  .cust-milk-collection-info .report-type-container,
+  .cust-milk-collection-info .report-virews-container {
+    width: 100%;
+    margin: 0;
+  }
+}

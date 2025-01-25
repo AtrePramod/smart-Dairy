@@ -1,0 +1,92 @@
+.navbar {
+  width: 100%;
+  background-color: var(--main-bg-color);
+}
+.logo-text {
+  color: #fff;
+}
+.navlinks {
+  display: contents;
+}
+.close {
+  width: 80%;
+}
+.open {
+  width: 80%;
+}
+.navlinks a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease-in;
+}
+
+.navlinks a:hover {
+  font-weight: 500;
+}
+.menu-btn {
+  display: none;
+  font-size: 20px;
+  color: #fff;
+}
+/* .................................... */
+/* Responsive Css */
+/* .................................... */
+
+@media screen and (max-width: 769px) {
+  .open-btn {
+    display: block;
+  }
+  .close-btn {
+    display: block;
+    margin: 30px 20px;
+  }
+  .navlinks {
+    flex-direction: column;
+  }
+  .navlinks a {
+    margin-bottom: 15px;
+  }
+  .open {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: var(--main-bg-color);
+    transition: all 0.2s ease;
+  }
+  .close {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .open-btn {
+    display: block;
+  }
+  .close-btn {
+    display: block;
+    margin: 30px 20px;
+  }
+  .navlinks {
+    flex-direction: column;
+  }
+  .navlinks a {
+    margin-bottom: 15px;
+  }
+  .open {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: var(--main-bg-color);
+    transition: all 0.2s ease;
+  }
+  .close {
+    display: none;
+  }
+}

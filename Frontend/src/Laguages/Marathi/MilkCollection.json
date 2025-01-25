@@ -1,0 +1,24 @@
+{
+  "m-complete-coll": "संकलन पूर्ण करा",
+  "m-milk-coll-report": "दूध वाहतूक संकलन रिपोर्ट ",
+  "m-coll-list": "दूध संकलन यादी",
+  "m-milkcoll": "दूध संकलन",
+
+  "m-reports": "रिपोर्ट्स",
+  "m-count": "एकूण सॅम्पल",
+  "m-t-liters": "एकूण लीटर",
+  "m-cust-code": "कोड",
+  "m-cust-name": "उत्पादकाचे नाव",
+  "m-sample-no": "सॅम्पल नं.",
+  "m-s-milk-type": "दूध प्रकार",
+  "m-s-date": "दिनांक",
+  "m-s-shift": "सत्र",
+
+  "m-btn-cancel": "रद्द करा",
+  "m-btn-save": "सेव्ह करा",
+  "m-btn-reset": "रीसेट",
+  "m-btn-saving": "सेव्ह करत आहोत...",
+
+  "m-d-excel": "एक्सेल",
+  "m-d-show": "दाखवा"
+}

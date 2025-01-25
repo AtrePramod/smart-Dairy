@@ -1,0 +1,292 @@
+.form-div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.form-div label {
+  margin: 5px 0;
+}
+
+.form-div .form-inputs {
+  width: 90%;
+  margin: 0 5% 10px 5%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--bg-gray-color);
+}
+
+.form-inputs::-webkit-outer-spin-button,
+.form-inputs::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-div .form-inputs:focus {
+  outline: none;
+  box-shadow: 1px 1px 8px 0px rgba(166, 166, 166, 1);
+}
+
+.milk-col-form .form-btns .form-btn {
+  width: 100px;
+  margin-right: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+}
+
+.milkdata-container .milkdata-data-headings {
+    position: sticky;
+    top: 0;
+  }
+
+/* milk collection list css */
+.collection-list-container {
+  max-height: 90%;
+  overflow-y: scroll;
+}
+.collection-details {
+  height: 120px;
+  margin-bottom: 10px;
+}
+.collection-list-container > .collection-details > .line {
+  width: 100%;
+  height: 2px;
+  background-color: #fff;
+}
+
+.sakalan-time {
+  padding: 5px 10px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.sakalan-time.on {
+  background-color: #f08726;
+  color: white;
+}
+
+.sakalan-time.off {
+  background-color: #4774f1;
+  color: white;
+}
+
+.header-nav-div {
+  background-color: #1a7cec;
+}
+.active-nav {
+  background-color: #081947;
+  padding: 10px;
+  color: black;
+}
+
+.milk-collection-info-div .collection-info-heading {
+  border-radius: 7px 7px 0 0;
+}
+
+/* milk collection list css end */
+
+/* ------------------------------------------> */
+/* Responcsive CSS */
+/* ------------------------------------------> */
+
+@media screen and (max-width: 426px) {
+  .milk-form-list-container {
+    flex-direction: column;
+  }
+  .toggle-button {
+    padding: 5px 8px;
+    font-size: 8px;
+  }
+  .form-div .form-inputs {
+    padding: 7px;
+  }
+  .milk-col-form .form-setting {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+  }
+  .milk-col-form .form-setting input {
+    width: 70%;
+  }
+  .milk-col-form .user-details {
+    flex-direction: column;
+  }
+  .user-details .form-div {
+    width: 100%;
+    flex-direction: row;
+    padding: 0 0 10px 0;
+  }
+  .user-details .form-div label {
+    width: 30%;
+  }
+  .user-details .form-div input {
+    width: 70%;
+  }
+
+  .milk-details-div {
+    width: 100%;
+    flex-direction: column;
+  }
+  .milk-details-div .milk-info {
+    width: 100%;
+  }
+
+  .milk-details-div .milk-info .form-div label {
+    width: 30%;
+  }
+  .milk-details-div .milk-info .form-div input {
+    width: 70%;
+  }
+
+  .milk-col-form .form-btns {
+    margin-top: 10px;
+  }
+  .milk-col-form .form-btns .form-btn {
+    padding: 7px;
+  }
+  .milk-form-list-container .milk-collection-form {
+    width: 100%;
+  }
+  .milk-form-list-container .milk-coll-list-div {
+    width: 100%;
+  }
+  .mobile-milk-collection-report .fetch-sankalan-div {
+    width: 100%;
+  }
+  .milk-form-list-container .milk-coll-list-div {
+    margin: 10px 0 0 0;
+  }
+}
+/* Mobile Milk Collection form css*/
+@media screen and (max-width: 426px) {
+  .apphome-nav-views {
+    padding: 5px;
+  }
+  .mobile-milk-collection-conainer {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .apphome-nav-views .mobile-milk-coll-form {
+    width: 100%;
+    min-height: fit-content;
+  }
+  .form-setting {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  .form-setting .form-date-div {
+    margin-bottom: 10px;
+  }
+  .mobile-milk-collection-conainer .mobile-milk-coll-form .milk-details-div {
+    flex-direction: column;
+    padding: 10px 0;
+  }
+  .mobile-milk-coll-form .show-milk-data-container {
+    padding: 0;
+  }
+  .milk-details-div .form-div {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  .form-setting .milk-details {
+    padding: 0;
+    margin-bottom: 10px;
+  }
+
+  .form-date-div label,
+  .milk-details label,
+  .milk-details-div .form-div label {
+    width: 30%;
+  }
+
+  .form-date-div input,
+  .milk-details select,
+  .milk-details-div .form-div input {
+    width: 70%;
+  }
+
+  .form-setting .form-date-div,
+  .form-setting .milk-details {
+    width: 100%;
+  }
+  .mobile-milkcoll-form-btns .btn {
+    margin-top: 10px;
+  }
+}
+/* css for Milk Collector reports */
+@media screen and (max-width: 426px) {
+  .select-milk-collector-conatiner {
+    min-height: fit-content;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .select-milk-collector-conatiner .form-label-select-div {
+    width: 100%;
+  }
+
+  .select-milk-collector-conatiner .selectand-btn-div {
+    width: 100%;
+    margin: 5px 0;
+    justify-content: space-between ;
+  }
+  .collection-download-btn {
+    margin-bottom: 5px;
+  }
+  
+}
+/* complete mobile milk collection form */
+@media screen and (max-width: 426px) {
+  .apphome-nav-views .complete-mobile-milk-container {
+    min-height: max-content;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .apphome-nav-views .complete-mobile-milk-coll {
+    min-height: fit-content;
+    width: 100%;
+  }
+  .complete-mobile-milk-coll .form-date-div {
+    padding: 0;
+    justify-content: space-between;
+  }
+  .complete-mobile-milk-coll .form-date-div input {
+    width: 40%;
+  }
+  .complete-mobile-milk-coll .user-details {
+    min-height: fit-content;
+    flex-direction: column;
+  }
+  .complete-mobile-milk-coll .user-details .form-div {
+    width: 100%;
+    flex-direction: row;
+  }
+}
+/* Mobile Milk Collection Report css*/
+@media screen and (max-width: 426px) {
+  .apphome-nav-views .mobile-milk-collection-report .milk-collection-info-div {
+    width: 100%;
+    padding: 0;
+  }
+  .mobile-milk-collection-report .page-title-button-div {
+    width: 100%;
+    padding: 0 10px;
+  }
+  .mobile-milk-collection-report .page-title-button-div button {
+    margin-left: 5px;
+  }
+  .mobile-milk-collection-report .d-icons {
+    display: none;
+  }
+}
+

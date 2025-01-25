@@ -1,0 +1,138 @@
+.applogo {
+  width: 80px;
+  height: 80px;
+}
+.error-border {
+  border: 1px solid red;
+}
+
+.terms-conditions .checkboxx {
+  color: #5d06ad;
+  margin-right: 10px;
+}
+.swith-form-button {
+  margin-bottom: 5px;
+  border: none;
+  font-weight: 400;
+  color: #5d06ad;
+  background: transparent;
+}
+.update-container {
+  margin-top: 30%;
+}
+
+.form-btn {
+  padding: 10px;
+  font-weight: 600;
+  border-radius: 7px;
+  color: #fff;
+  border: none;
+  background: linear-gradient(
+    321deg,
+    rgba(55, 188, 226, 1) 61%,
+    rgba(44, 72, 226, 1) 100%
+  );
+  transition: all 0.3s ease;
+}
+.form-btn:hover {
+  background: linear-gradient(
+    167deg,
+    rgba(55, 188, 226, 1) 61%,
+    rgba(44, 72, 226, 1) 100%
+  );
+}
+.remember-me-div .checkbx {
+  border: #5d06ad;
+}
+
+.password-input-container {
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  background-color: #fcfbfb;
+}
+.password-input-container:hover {
+  box-shadow: 1px 2px 2px #fcfbfb;
+  border: 1px solid #7235ed;
+  -webkit-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  -moz-box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+  box-shadow: 1px 2px 16px -4px rgba(117, 111, 117, 1);
+}
+.password-input-container .pss-eye {
+  font-size: 18px;
+  color: #5d06ad;
+}
+.pass {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+}
+.pass:focus {
+  outline: none;
+}
+.pss-eye {
+  margin-right: 5px;
+}
+
+.loaging-spinner {
+  width: 100px;
+  height: 100px;
+}
+/* ............................... */
+/*Responsive css*/
+/* ............................... */
+
+@media only screen and (max-width: 992px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 100%;
+  }
+  .pass {
+    padding: 5px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .applogo {
+    margin-top: 50px;
+  }
+
+  .auth-container .form-container {
+    margin-top: 50px;
+    width: 100%;
+  }
+
+  .auth-container .login-form {
+    width: 80%;
+    margin: 0 10%;
+  }
+
+  .remember-me-div {
+    text-align: start;
+  }
+
+  .account-check-div {
+    text-align: center;
+  }
+  .password-input-container {
+    padding: 0;
+  }
+  .pass {
+    padding: 5px;
+  }
+}

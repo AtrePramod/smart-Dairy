@@ -1,0 +1,23 @@
+.nav-icons {
+  display: none;
+}
+
+@media screen and (max-width: 426px) {
+  .prevcollection-home-container {
+    flex-direction: column-reverse;
+  }
+  .prevcollection-home-container .header-nav-div {
+    width: 100%;
+    height: 10%;
+    flex-direction: row;
+  }
+  .home-nav-item .nav-icons {
+    display: block;
+    padding: 0; 
+  }
+
+  .prevcollection-home-container .home-nav-views {
+    width: 100%;
+    height: 90%;
+  }
+}

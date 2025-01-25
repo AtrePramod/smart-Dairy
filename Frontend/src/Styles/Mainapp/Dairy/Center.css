@@ -1,0 +1,74 @@
+/* ------------------------------------------- */
+/* center list css --------------------------- */
+/* ------------------------------------------- */
+.center-list-div {
+  overflow-x: auto;
+}
+.table-titles {
+  min-width: 1400px;
+  position: sticky;
+  top: 0;
+  background-color: antiquewhite;
+}
+.table-data {
+  min-width: 1400px;
+}
+
+.label-text .icons {
+  font-size: 22px;
+}
+.label-text .delete-icons {
+  font-size: 22px;
+  color: red;
+}
+
+/* ------------------------------------------- */
+/* center list css end ----------------------- */
+/* ------------------------------------------- */
+
+@media screen and (max-width: 769px) {
+  .center-main-container {
+    padding: 10px;
+  }
+  .center-main-container .center-information-div {
+    width: 70%;
+  }
+  .center-information-div .center-add-data-div {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .center-add-data-div .center-details-div {
+    flex: 4 1 110px;
+  }
+  .add-data-div {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .add-data-div .center-pass-details-div {
+    flex: 2 1 150px;
+  }
+}
+
+@media screen and (max-width: 426px) {
+  .center-main-container {
+    padding: 10px;
+  }
+  .center-main-container .center-information-div {
+    width: 100%;
+  }
+  .center-add-data-div .center-data {
+    flex-direction: column;
+  }
+
+  /* .center-details-div {
+    flex: 2 1 150px;
+  }
+  .add-data-div {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .add-data-div .center-pass-details-div{
+    flex: 2 1 100px;
+  } */
+}

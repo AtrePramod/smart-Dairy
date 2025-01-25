@@ -1,0 +1,38 @@
+.all-products-list > .product-list {
+  max-height: 100%;
+  overflow-y: scroll;
+}
+.all-products-list {
+  padding-top: 10px;
+}
+.product-list > .prod-name {
+  margin: 10px 0;
+  padding: 5px 10px;
+  background-color: #f1ebeb;
+}
+
+/* sales form css */
+.sales-form-container .form-inputs {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #dfdede;
+}
+
+/* sales form css end */
+
+/*--------Mobile Screen CSS-------*/
+@media screen and (max-width: 426px) {
+  .product-form-bill-container {
+    flex-direction: column;
+  }
+  .product-form-bill-container .add-products {
+    width: 100%;
+  }
+  .product-form-bill-container .sales-bill-container {
+    width: 100%;
+  }
+  .product-form-bill-container .sales-recipt-container {
+    width: 100%;
+  }
+}

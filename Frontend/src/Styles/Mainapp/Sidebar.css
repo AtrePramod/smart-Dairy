@@ -1,0 +1,83 @@
+/* ................................. */
+/* sidebar css */
+/* ................................. */
+
+aside .sidebar-logo {
+  width: 100%;
+  height: 120px;
+}
+.close-icon {
+  margin-right: 30px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+}
+.sidebar-list {
+  color: #fff;
+}
+.sidebar-list .sidebar-list-item {
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 18px;
+}
+.sidebar-list .sidebar-list-item > a > span {
+  padding: 0 10px;
+}
+.close-icon {
+  display: none;
+}
+
+.logout-btn-div{
+  position: relative;
+  bottom: 0;
+}
+.logout-icon{
+  font-size: 22px;
+  color: #fff;
+}
+/* sidebar css end */
+
+/* Responsive css */
+
+/*--------Small Screen ( < 992px) CSS-------*/
+
+@media screen and (max-width: 992px) {
+  .close-icon {
+    display: none;
+  }
+  .main-view-container {
+    width: 100%;
+  }
+  .header-navs {
+    display: flex;
+    align-items: center;
+  }
+  .header-right span {
+    display: none;
+  }
+}
+
+/*--------Tablet Screen CSS-------*/
+
+@media screen and (max-width: 769px) {
+  .header-navs > .menu > .menu-icon {
+    display: inline-block;
+    font-size: 20px;
+  }
+  .close-icon {
+    display: block;
+  }
+}
+
+/*--------Mobile Screen CSS-------*/
+
+@media screen and (max-width: 426px) {
+  .nav-main-view-container,
+  .header-navs,
+  .main-view-container {
+    width: 100%;
+  }
+  .close-icon {
+    display: block;
+  }
+}

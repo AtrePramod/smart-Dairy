@@ -1,0 +1,93 @@
+/* dashboard cards css */
+.dashboard-cards {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.months-selector {
+  padding: 5px 10px;
+  background-color: var(--bg-gray-color);
+  border: none;
+}
+.priod-container .show-btn {
+  padding:7px 10px;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  background-color: var(--main-bg-color);
+}
+.card {
+  width: 20%;
+  height: 80px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 6px;
+  background-color: #fcfcfc;
+  cursor: pointer;
+}
+.card > .card-icon {
+  font-size: 20px;
+  color: blueviolet;
+}
+
+.dashboard-scrll-container {
+  min-height: 80%;
+  overflow-y: scroll;
+}
+
+.milk-collection-chart {
+  cursor: pointer;
+}
+
+/* dashboard cards css end */
+
+/*--------Small Screen ( < 992px) CSS-------*/
+
+@media screen and (max-width: 426px) {
+  .selection-container {
+    flex-direction: column;
+  }
+
+  .selection-container .select-data-text {
+    width: 100%;
+  }
+  .selection-container .priod-container {
+    width: 100%;
+  }
+
+  .dashboard-cards {
+    height: 40%;
+    margin-top: 10px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .card {
+    width: 40%;
+    height: 50px;
+    margin-bottom: 10px;
+  }
+
+  .dashboard-scrll-container .dashboard-data-charts {
+    min-height: 100%;
+    margin-top: 10px;
+    flex-direction: column;
+    padding: 10px;
+  }
+  .dashboard-data-charts .milk-collection-chart {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 10px;
+  }
+  .date-input {
+    margin-left: 10px;
+    width: 70%;
+    height: 20px;
+  }
+}
+
+/*--------Tablet Screen CSS-------*/
+
+/*--------Mobile Screen CSS-------*/

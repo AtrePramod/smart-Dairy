@@ -1,0 +1,27 @@
+.app-home-container > .header-nav {
+  position: sticky;
+  top: 60px;
+  z-index: 9;
+  background-color: #c18383;
+}
+.home-nav-item {
+  font-size: 18px;
+  color: #fff;
+  margin: 0 10px;
+}
+
+.home-nav-item > a > span {
+  margin: 0 10px;
+}
+.home-nav-item a {
+  cursor: pointer;
+}
+
+/*--------Mobile Screen CSS-------*/
+
+@media screen and (max-width: 426px) {
+  
+  .home-nav-item > a > span {
+    display: none;
+  }
+}
