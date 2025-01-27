@@ -1,20 +1,21 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 // import "../../../../../Styles/Mainapp/Masters/CustomerMaster.css";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 // import { getMaxCustNo } from "../../../../../App/Features/Customers/customerSlice";
-import CattleFeedNavlinks from "./MedicinesNavlinks";
-import CattleFeedNavViews from "./MedicinesNavViews";
 
-const MedicinesMaster = () => {
-  const dispatch = useDispatch();
+import MedicinesNavlinks from "./MedicinesNavlinks";
+import MedicinesNavViews from "./MedicinesNavViews";
+
+const MedicinesPurMaster = () => {
+  // const dispatch = useDispatch();
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedMedicinesSaleIndex")) || 0
+    parseInt(localStorage.getItem("selectedMedicinespurIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedMedicinesSaleIndex", isselected);
+    localStorage.setItem("selectedMedicinespurIndex", isselected);
   }, [isselected]);
 
   // useEffect(() => {
@@ -28,16 +29,16 @@ const MedicinesMaster = () => {
   return (
     <div className="customer-master-container w100 h1 d-flex-col">
       <div className="customer-master-navigation w100 h10 d-flex bg3">
-        <CattleFeedNavlinks
+        <MedicinesNavlinks
           isselected={isselected}
           setIsSelected={setIsSelected}
         />
       </div>
       <div className="customer-views w100 h90 d-flex center">
-        <CattleFeedNavViews index={isselected} />
+        <MedicinesNavViews index={isselected} />
       </div>
     </div>
   );
 };
 
-export default MedicinesMaster;
+export default MedicinesPurMaster;

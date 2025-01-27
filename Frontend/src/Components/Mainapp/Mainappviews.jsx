@@ -6,9 +6,7 @@ import Accounts from "./Accounts/Accounts";
 import Settings from "./Settings/Settings";
 import Inventory from "./Inventory/Inventory";
 // Import Submenu Components for Inventory
-import ProductList from "./Inventory/InventroyPages/ProductList";
-import ProductPurchase from "./Inventory/InventroyPages/ProductPurchase";
-import ProductSale from "./Inventory/InventroyPages/ProductSale";
+
 import StartingStockInfo from "./Inventory/InventroyPages/StartingStockInfo";
 // Import Submenu Components for Settings
 import DairySettings from "./Settings/DairySettings/DairySettings";
@@ -33,9 +31,14 @@ import SaleReport from "./SaleReport";
 import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
 import Products from "./Inventory/InventroyPages/Products/Products";
 import StockMaster from "./Inventory/InventroyPages/Stock/StockMaster";
+import CattleFeedPurMaster from "./Purchase/CattleFeed/CattleFeedMaster";
+import GroceryPurMaster from "./Purchase/Grocery/GroceryMaster";
+import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
+import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
+// eslint-disable-next-line react/prop-types
 const Mainappviews = ({ index }) => {
   switch (index) {
     case 0:
@@ -83,17 +86,16 @@ const Mainappviews = ({ index }) => {
       return <OthersMaster />;
     case 5.5:
       return <MilkRateMaster />;
-    //Report Submenus
+    //Purchase Submenus
     case 6.1:
-      return <MainLedger />;
+      return <CattleFeedPurMaster />;
     case 6.2:
-      return <MilkCollectorsReports />;
+      return <MedicinesPurMaster />;
     case 6.3:
-      return <CustomersMaster />;
+      return <GroceryPurMaster />;
     case 6.4:
-      return <EmployeeMaster />;
-    case 6.5:
-      return <MilkRateMaster />;
+      return <OthersPurMaster />;
+
     //Payments Submenus
     case 7.1:
       return <MainLedger />;

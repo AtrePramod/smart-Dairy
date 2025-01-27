@@ -1,16 +1,15 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
-import CattleSaleList from "./GrocerySaleList";
-import CreateCattleFeed from "./CreateGrocery";
+import List from "./List";
+import Create from "./Create";
 
+// eslint-disable-next-line react/prop-types
 const GroceryNavViews = ({ index }) => {
   switch (index) {
     case 0:
-      return <CattleSaleList />;
-      break;
+      return <List />;
     case 1:
-      return <CreateCattleFeed />;
-      break;
+      return <Create />;
 
     default:
       break;

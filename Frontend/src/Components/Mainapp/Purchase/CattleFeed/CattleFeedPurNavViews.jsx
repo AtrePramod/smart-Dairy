@@ -4,7 +4,7 @@ import List from "./List";
 import Create from "./Create";
 
 // eslint-disable-next-line react/prop-types
-const OthersNavViews = ({ index }) => {
+const CattleFeedPurNavViews = ({ index }) => {
   switch (index) {
     case 0:
       return <List />;
@@ -16,4 +16,4 @@ const OthersNavViews = ({ index }) => {
   }
 };
 
-export default OthersNavViews;
+export default CattleFeedPurNavViews;

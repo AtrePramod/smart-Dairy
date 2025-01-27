@@ -6,15 +6,15 @@ import { useDispatch } from "react-redux";
 import CattleFeedNavlinks from "./GroceryNavlinks";
 import CattleFeedNavViews from "./GroceryNavViews";
 
-const GroceryMaster = () => {
-  const dispatch = useDispatch();
+const GroceryPurMaster = () => {
+  // const dispatch = useDispatch();
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedGrocerySaleIndex")) || 0
+    parseInt(localStorage.getItem("selectedGrocerypurIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedGrocerySaleIndex", isselected);
+    localStorage.setItem("selectedGrocerypurIndex", isselected);
   }, [isselected]);
 
   // useEffect(() => {
@@ -40,4 +40,4 @@ const GroceryMaster = () => {
   );
 };
 
-export default GroceryMaster;
+export default GroceryPurMaster;

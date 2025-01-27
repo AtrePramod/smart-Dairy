@@ -1,18 +1,17 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import OthersNavlinks from "./OthersNavlinks";
 import OthersNavViews from "./OthersNavViews";
 
-const OthersMaster = () => {
-  const dispatch = useDispatch();
+const OthersPurMaster = () => {
   const [isselected, setIsSelected] = useState(
-    parseInt(localStorage.getItem("selectedOthersSaleIndex")) || 0
+    parseInt(localStorage.getItem("selectedOtherpurIndex")) || 0
   );
 
   // Update localStorage whenever isselected changes
   useEffect(() => {
-    localStorage.setItem("selectedOthersSaleIndex", isselected);
+    localStorage.setItem("selectedOtherpurIndex", isselected);
   }, [isselected]);
 
   // useEffect(() => {
@@ -35,4 +34,4 @@ const OthersMaster = () => {
   );
 };
 
-export default OthersMaster;
+export default OthersPurMaster;

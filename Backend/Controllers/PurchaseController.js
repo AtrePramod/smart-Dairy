@@ -147,7 +147,6 @@ exports.paymentDetails = async (req, res) => {
 //Deduction Customer Route....................
 //............................................
 
-
 exports.deductionInfo = async (req, res) => {
   const { fromDate, toDate } = req.body;
 
@@ -311,3 +310,7 @@ exports.allPaymentDetails = async (req, res) => {
     }
   });
 };
+
+//added by pramod start
+
+//added by pramod end

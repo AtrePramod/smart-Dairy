@@ -18,4 +18,8 @@ router.route("/payment-info").post(verifyToken, paymentDetails);
 router.route("/payment/details").post(verifyToken, allPaymentDetails);
 router.route("/deduction-info").post(verifyToken, deductionInfo);
 
+//added by Pramo start
+
+//added by Pramo end
+
 module.exports = router;

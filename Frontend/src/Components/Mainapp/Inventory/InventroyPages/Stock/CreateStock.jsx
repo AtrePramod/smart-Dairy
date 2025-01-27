@@ -34,24 +34,25 @@ const CreateStock = () => {
     const newErrors = validateForm();
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      try {
-        console.log("Product Data Submitted: ", formData);
-        const res = await axiosInstance.post("/item/new", formData); // Replace with your actual API URL
-        alert(res?.data?.message);
-
-        setFormData({
-          ItemName: "",
-          marname: "",
-          ItemGroupCode: "",
-          UnitCode: "",
-          ItemDesc: "",
-          Manufacturer: "",
-        });
-        alert("Product created successfully!");
-      } catch (error) {
-        console.error("Error creating product: ", error);
-        alert("There was an error creating the product.");
-      }
+      console.log("Product Data Submitted: ", formData);
+      alert("Product created successfully!");
+      // try {
+      //   console.log("Product Data Submitted: ", formData);
+      //   const res = await axiosInstance.post("/item/new", formData); // Replace with your actual API URL
+      //   alert(res?.data?.message);
+      //   setFormData({
+      //     ItemName: "",
+      //     marname: "",
+      //     ItemGroupCode: "",
+      //     UnitCode: "",
+      //     ItemDesc: "",
+      //     Manufacturer: "",
+      //   });
+      //   alert("Product created successfully!");
+      // } catch (error) {
+      //   console.error("Error creating product: ", error);
+      //   alert("There was an error creating the product.");
+      // }
     }
   };
 

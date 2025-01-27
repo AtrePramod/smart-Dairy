@@ -2,11 +2,12 @@
 import React from "react";
 import { IoPersonAdd, IoList } from "react-icons/io5";
 
-const CattleFeedNavlinks = ({ isselected, setIsSelected }) => {
+// eslint-disable-next-line react/prop-types
+const CattleFeedPurNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
-    { name: "Sale List", icon: <IoList className="icon" />, index: 0 },
+    { name: "Purchase List", icon: <IoList className="icon" />, index: 0 },
     {
-      name: "Create Sale",
+      name: "Create Purchase",
       icon: <IoPersonAdd className="icon" />,
       index: 1,
     },
@@ -33,4 +34,4 @@ const CattleFeedNavlinks = ({ isselected, setIsSelected }) => {
   );
 };
 
-export default CattleFeedNavlinks;
+export default CattleFeedPurNavlinks;
