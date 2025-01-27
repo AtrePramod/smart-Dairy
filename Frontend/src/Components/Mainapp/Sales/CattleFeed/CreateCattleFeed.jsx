@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import "../../Inventory/InventroyPages/productSale.css";
 
 const CreateCattleFeed = () => {
+  // State variables for cart, customer info, date, etc.
   const [cartItem, setCartItem] = useState([]);
   const [cname, setCname] = useState("");
   const [fcode, setFcode] = useState("");
@@ -20,6 +21,7 @@ const CreateCattleFeed = () => {
   const [userid, setUserid] = useState("");
   const [billNo, setBillNo] = useState("9112");
 
+  // Fetch all items for the cattle feed sale
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
@@ -32,10 +34,12 @@ const CreateCattleFeed = () => {
     fetchAllItems();
   }, []);
 
+  // Set today's date
   useEffect(() => {
     setDate(getTodaysDate());
   }, []);
 
+  // Set customer name and ID based on the farmer code
   useEffect(() => {
     if (customerslist.length > 0) {
       const customer = customerslist.find(
@@ -43,25 +47,29 @@ const CreateCattleFeed = () => {
       );
       setCname(customer?.cname || "");
       setUserid(customer?.rno || "");
-      // console.log(customer);
     } else {
       setCname("");
     }
   }, [fcode, customerslist]);
 
+  // Update the amount whenever rate or quantity changes
   useEffect(() => {
     setAmt(rate * qty);
   }, [rate, qty]);
 
+  // Function to get the current date
   const getTodaysDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   };
+
+  // Function to find item name based on item code
   const handleFindItemName = (id) => {
     const selectedItem = itemList.find((item) => item.ItemCode === id);
     return selectedItem.ItemName;
   };
 
+  // Add item to the cart
   const handleAddToCart = () => {
     if (selectitemcode > 0 && qty > 0 && rate > 0) {
       const selectedItem = itemList.find(
@@ -81,30 +89,30 @@ const CreateCattleFeed = () => {
         Amount: qty * rate,
       };
 
-      // Update the cart items and log the updated array
+      // Update the cart items
       setCartItem((prev) => {
         const updatedCart = [...prev, newCartItem];
-        // console.log("Updated Cart:", updatedCart); // Logs the latest state
         return updatedCart;
       });
 
-      // Reset the input values
+      // Reset input values
       setQty(1);
       setRate(0);
       setAmt(0);
-      setSelectitemcode(0); // Reset amount to 0 after clearing rate and quantity
+      setSelectitemcode(0);
     }
   };
 
+  // Generate a new bill number using the current timestamp
   useEffect(() => {
     const generateBillNo = () => {
-      const timestamp = Date.now(); // Unique value based on current time
-      console.log(timestamp);
+      const timestamp = Date.now();
       setBillNo(`9${timestamp}`);
     };
     generateBillNo();
   }, []);
 
+  // Delete an item from the cart
   const handleDeleteItem = (id) => {
     if (confirm("Are you sure you want to Delete?")) {
       const updatedCart = cartItem.filter((item, index) => index !== id);
@@ -112,6 +120,7 @@ const CreateCattleFeed = () => {
     }
   };
 
+  // Clear all form fields and the cart
   const handelClear = () => {
     setFcode("");
     setCartItem([]);
@@ -121,6 +130,7 @@ const CreateCattleFeed = () => {
     setSelectitemcode(0);
   };
 
+  // Handle form submission and send cart data to the server
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
@@ -143,10 +153,11 @@ const CreateCattleFeed = () => {
       }
     }
   };
+
+  // Function to handle printing the invoice
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     const printContent = document.getElementById("print-section").innerHTML;
-    console.log(printContent);
 
     if (printWindow) {
       printWindow.document.write(

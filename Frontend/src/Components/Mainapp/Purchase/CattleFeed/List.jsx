@@ -117,7 +117,7 @@ const List = () => {
         </button>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Dealers List</span>
+        <span className="heading p10">Cattle Feed List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
             <span className="f-info-text w5">SrNo</span>

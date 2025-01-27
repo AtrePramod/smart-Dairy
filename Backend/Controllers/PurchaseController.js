@@ -313,4 +313,260 @@ exports.allPaymentDetails = async (req, res) => {
 
 //added by pramod start
 
+//creating new one and multi purchase items controller
+exports.createPurchases = async (req, res) => {
+  const purchaseData = req.body; // Expecting an array of purchase objects
+
+  // Validate input
+  if (!Array.isArray(purchaseData) || purchaseData.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Request body must be a non-empty array of purchase data.",
+    });
+  }
+
+  for (const purchase of purchaseData) {
+    const { purchasedate, itemcode, qty, dealerCode } = purchase;
+    if (!purchasedate || !itemcode || !qty || !dealerCode) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Each purchase must include purchasedate, itemcode, qty, and dealerCode.",
+      });
+    }
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      // Step 1: Build the bulk INSERT query dynamically
+      let insertQuery =
+        "INSERT INTO PurchaseMaster (purchasedate, itemcode, qty, dealerCode";
+      const insertValues = [];
+      const valuePlaceholders = [];
+
+      for (const purchase of purchaseData) {
+        const { purchasedate, itemcode, qty, dealerCode, ...otherFields } =
+          purchase;
+        const rowValues = [purchasedate, itemcode, qty, dealerCode];
+
+        for (const key of Object.keys(otherFields)) {
+          if (!insertQuery.includes(key)) {
+            insertQuery += `, ${key}`;
+          }
+          rowValues.push(otherFields[key]);
+        }
+
+        insertValues.push(...rowValues);
+        valuePlaceholders.push(`(${rowValues.map(() => "?").join(", ")})`);
+      }
+
+      insertQuery += `) VALUES ${valuePlaceholders.join(", ")}`;
+
+      // Step 2: Execute the bulk INSERT query
+      connection.query(insertQuery, insertValues, (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error inserting purchase records: ", err);
+          return res
+            .status(500)
+            .json({ message: "Error creating purchase records" });
+        }
+
+        res.status(201).json({
+          success: true,
+          message: "Purchase records created successfully",
+          insertedRows: result.affectedRows,
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
+// Get All purchase items controller
+exports.getAllPurchases = async (req, res) => {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      const query = "SELECT * FROM PurchaseMaster";
+
+      connection.query(query, (err, results) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error fetching purchase records: ", err);
+          return res.status(500).json({
+            success: false,
+            message: "Error retrieving purchase records",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Purchase records fetched successfully",
+          total: results.length,
+          data: results,
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+// Update purchase item controller
+exports.updatePurchase = async (req, res) => {
+  const { purchaseid, ...updateFields } = req.body;
+
+  // Validate input
+  if (!purchaseid) {
+    return res.status(400).json({
+      success: false,
+      message: "Purchase ID is required to update a record.",
+    });
+  }
+
+  if (Object.keys(updateFields).length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "At least one field to update is required.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      // Dynamically construct the update query
+      const updateKeys = Object.keys(updateFields).map((key) => `${key} = ?`);
+      const updateQuery = `UPDATE PurchaseMaster SET ${updateKeys.join(
+        ", "
+      )} WHERE purchaseid = ?`;
+      const values = [...Object.values(updateFields), purchaseid];
+
+      connection.query(updateQuery, values, (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error updating purchase record: ", err);
+          return res.status(500).json({
+            success: false,
+            message: "Error updating purchase record",
+          });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "No purchase record found with the given ID.",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Purchase record updated successfully",
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
+// delete purchase item controller
+exports.deletePurchase = async (req, res) => {
+  const { purchaseid } = req.params;
+
+  // Validate input
+  if (!purchaseid) {
+    return res.status(400).json({
+      success: false,
+      message: "Purchase ID is required to delete a record.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({
+        success: false,
+        message: "Database connection error",
+      });
+    }
+
+    try {
+      const deleteQuery = "DELETE FROM PurchaseMaster WHERE purchaseid = ?";
+
+      connection.query(deleteQuery, [purchaseid], (err, result) => {
+        connection.release();
+
+        if (err) {
+          console.error("Error deleting purchase record: ", err);
+          return res.status(500).json({
+            success: false,
+            message: "Error deleting purchase record",
+          });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "No purchase record found with the given ID.",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Purchase record deleted successfully",
+        });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
 //added by pramod end

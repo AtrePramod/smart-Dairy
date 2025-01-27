@@ -5,6 +5,10 @@ const {
   deductionInfo,
   paymentDetails,
   allPaymentDetails,
+  createPurchases,
+  getAllPurchases,
+  updatePurchase,
+  deletePurchase,
 } = require("../Controllers/PurchaseController");
 const router = express.Router();
 
@@ -19,6 +23,10 @@ router.route("/payment/details").post(verifyToken, allPaymentDetails);
 router.route("/deduction-info").post(verifyToken, deductionInfo);
 
 //added by Pramo start
+router.route("/purchase/new").post(createPurchases);
+router.route("/purchase/all").get(getAllPurchases);
+router.route("/purchase/update").put(updatePurchase);
+router.route("/purchase/delete/:purchaseid").delete(deletePurchase);
 
 //added by Pramo end
 

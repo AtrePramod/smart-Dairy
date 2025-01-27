@@ -1,0 +1,19 @@
+.col {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 10px;
+}
+
+.forDWidth {
+  min-width: 1141px !important;
+}
+
+@media screen and (max-width: 426px) {
+  .purchase {
+    width: 100%;
+    padding: 10px;
+    margin: 15px;
+    height: 100%;
+  }
+}
+
