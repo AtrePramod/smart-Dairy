@@ -1,15 +1,14 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import { FaDownload, FaRegEye } from "react-icons/fa6";
-import * as XLSX from "xlsx";
-import Spinner from "../../../Home/Spinner/Spinner";
+import { FaDownload } from "react-icons/fa6";
 import { useSelector } from "react-redux";
-import { FaRegEdit } from "react-icons/fa";
+import Spinner from "../../../Home/Spinner/Spinner";
 import axiosInstance from "../../../../App/axiosInstance";
+import * as XLSX from "xlsx";
+import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
-import "../../../../Styles/Mainapp/Sale/sale.css";
 
-const CattleSaleList = () => {
+const GrocerySaleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
@@ -62,7 +61,7 @@ const CattleSaleList = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const { data } = await axiosInstance.get("/sale/all?ItemGroupCode=1"); // Replace with your actual API URL
+        const { data } = await axiosInstance.get("/sale/all?ItemGroupCode=3"); // Replace with your actual API URL
         if (data.success) {
           // console.log(data);
           setSales(data.salesData); // Assuming 'sales' is the array returned by your backend
@@ -99,7 +98,7 @@ const CattleSaleList = () => {
     try {
       const queryParams = new URLSearchParams(getItem).toString();
       const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=1&${queryParams}`
+        `/sale/all?ItemGroupCode=3&${queryParams}`
       );
       if (data?.success) {
         setSales(data.salesData);
@@ -181,19 +180,6 @@ const CattleSaleList = () => {
     }
   };
 
-  const groupedSales = sales.reduce((acc, sale) => {
-    const key = sale.BillNo; // Grouping by billNo
-    if (!acc[key]) {
-      acc[key] = { ...sale, TotalAmount: 0 }; // Initialize with sale data and set TotalAmount to 0
-    }
-    acc[key].TotalAmount += sale.Amount; // Sum the Amount field
-    return acc;
-  }, {});
-
-  const groupedSalesArray = Object.values(groupedSales);
-
-  const handleView = () => {};
-
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div
@@ -254,25 +240,28 @@ const CattleSaleList = () => {
         </button> */}
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Cattle Feed List</span>
+        <span className="heading p10">Grocery List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb">
-            <span className="f-info-text w5">Sr.No</span>
-            <span className="f-info-text w5">Date</span>
-            <span className="f-info-text w5">Rec. No</span>
-            <span className="f-info-text w5">Cust Code</span>
-            <span className="f-info-text w25">Cust Name</span>
+          <div className="data-headings-div h10 d-flex center t-center sb">
+            <span className="f-info-text w5">Edit</span>
+            <span className="f-info-text w5">Bill Date</span>
+            <span className="f-info-text w5">Receipt No</span>
+            <span className="f-info-text w5">Customer Code</span>
+            <span className="f-info-text w15">Customer Name</span>
+            <span className="f-info-text w10">Item Name</span>
+            <span className="f-info-text w5">Qty</span>
+            <span className="f-info-text w5">Rate</span>
             <span className="f-info-text w5">Amount</span>
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
             <Spinner />
-          ) : groupedSalesArray.length > 0 ? (
-            groupedSalesArray.map((sale, index) => (
+          ) : sales.length > 0 ? (
+            sales.map((sale, index) => (
               <div
                 key={index}
-                className={`data-values-div sale-data-values-div w100 h10 d-flex center t-center sa ${
+                className={`data-values-div w100 h10 d-flex center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
@@ -280,15 +269,11 @@ const CattleSaleList = () => {
                 }}
               >
                 <span className="text w5">
-                  {
-                    /* <FaRegEdit
+                  <FaRegEdit
                     size={15}
                     className="table-icon"
                     onClick={() => handleEditClick(sale)}
-                  /> */
-
-                    index + 1
-                  }
+                  />
                 </span>
                 <span className="text w5">
                   {" "}
@@ -298,17 +283,20 @@ const CattleSaleList = () => {
                 </span>
                 <span className="text w5 ">{sale.ReceiptNo}</span>
                 <span className="text w5">{sale.CustCode}</span>
-                <span className="text w25">
+                <span className="text w15">
                   {handleFindCustName(sale.CustCode)}
                 </span>
-
-                <span className="text w5">{sale.TotalAmount}</span>
-                <span className="text w5 d-flex j-center a-center">
-                  <button className="px5">View</button>
+                <span className="text w10">
+                  {handleFindItemName(sale.ItemCode)}
+                </span>
+                <span className="text w5">{sale.Qty}</span>
+                <span className="text w5">{sale.Rate}</span>
+                <span className="text w5">{sale.Amount}</span>
+                <span className="text w5">
                   <MdDeleteOutline
                     onClick={() => handleDelete(sale?.saleid)}
                     size={15}
-                    className="table-icon "
+                    className="table-icon"
                     style={{ color: "red" }}
                   />
                 </span>
@@ -374,4 +362,4 @@ const CattleSaleList = () => {
   );
 };
 
-export default CattleSaleList;
+export default GrocerySaleList;

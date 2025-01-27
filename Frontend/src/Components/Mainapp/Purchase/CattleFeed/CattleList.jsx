@@ -9,7 +9,7 @@ import axiosInstance from "../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import "../../../../Styles/Mainapp/Sale/sale.css";
 
-const CattleSaleList = () => {
+const CattleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);
   const [date1, SetDate1] = useState("");
   const [date2, SetDate2] = useState("");
@@ -374,4 +374,4 @@ const CattleSaleList = () => {
   );
 };
 
-export default CattleSaleList;
+export default CattleList;
