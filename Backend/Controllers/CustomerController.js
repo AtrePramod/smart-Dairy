@@ -429,6 +429,62 @@ exports.dealerList = async (req, res) => {
   });
 };
 
+exports.updateDealer = async (req, res) => {
+  const { id, cname, Phone, City, cust_ifsc, dist, cust_accno } = req.body;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const updateDealerQuery = `
+        UPDATE customer
+        SET 
+          cname = ?, 
+          Phone = ?, 
+          City = ?, 
+          cust_ifsc = ?, 
+          dist = ?, 
+          cust_accno = ?
+        WHERE id = ?
+      `;
+
+      connection.query(
+        updateDealerQuery,
+        [cname, Phone, City, cust_ifsc, dist, cust_accno, id],
+        (error, results) => {
+          connection.release(); // Release the connection back to the pool
+
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res
+              .status(500)
+              .json({ message: "Error updating dealer", success: false });
+          }
+
+          if (results.affectedRows === 0) {
+            return res
+              .status(404)
+              .json({ message: "Dealer not found", success: false });
+          }
+
+          return res
+            .status(200)
+            .json({ message: "Dealer updated successfully", success: true });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res
+        .status(500)
+        .json({ message: "Internal server error", success: false });
+    }
+  });
+};
+
 // this code added by Pramod... end
 
 // exports.createCustomer = async (req, res) => {

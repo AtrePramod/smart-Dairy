@@ -80,6 +80,19 @@ const CreateDealers = () => {
     }
   };
 
+  const handleKeyDown = (e, fieldName) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const formElements = Array.from(document.querySelectorAll(".data"));
+      const currentIndex = formElements.findIndex(
+        (el) => el.name === fieldName
+      );
+      if (currentIndex !== -1 && currentIndex < formElements.length - 1) {
+        formElements[currentIndex + 1].focus();
+      }
+    }
+  };
+
   const handleClear = () => {
     setFormData({
       cust_no: custno,
@@ -113,6 +126,7 @@ const CreateDealers = () => {
                 value={formData.cust_no}
                 className={`data ${errors.cust_no ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 min="1"
                 readOnly
               />
@@ -129,6 +143,7 @@ const CreateDealers = () => {
                 value={formData.marathi_name}
                 className={`data ${errors.marathi_name ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="मराठी नाव "
               />
             </div>
@@ -142,6 +157,7 @@ const CreateDealers = () => {
                 value={formData.cust_name}
                 className={`data ${errors.cust_name ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="English Name "
               />
             </div>
@@ -155,6 +171,7 @@ const CreateDealers = () => {
                 value={formData.mobile}
                 className={`data ${errors.mobile ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="98********"
               />
             </div>
@@ -170,6 +187,7 @@ const CreateDealers = () => {
                 value={formData.district}
                 className={`data ${errors.district ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="Pune"
               />
             </div>
@@ -183,6 +201,7 @@ const CreateDealers = () => {
                 value={formData.city}
                 className={`data ${errors.city ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="Mumbai"
               />
             </div>
@@ -196,6 +215,7 @@ const CreateDealers = () => {
                 value={formData.pincode}
                 className={`data ${errors.pincode ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="411001"
               />
             </div>
@@ -211,6 +231,7 @@ const CreateDealers = () => {
                 value={formData.bankName}
                 className={`data ${errors.bankName ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="SBI"
               />
             </div>
@@ -224,6 +245,7 @@ const CreateDealers = () => {
                 value={formData.bank_ac}
                 className={`data ${errors.bank_ac ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 placeholder="1234567890"
               />
             </div>
@@ -235,6 +257,7 @@ const CreateDealers = () => {
                 type="text"
                 name="bankIFSC"
                 value={formData.bankIFSC}
+                onKeyDown={(e) => handleKeyDown(e, e.target.name)}
                 className={`data ${errors.bankIFSC ? "input-error" : ""}`}
                 onChange={handleInputChange}
                 placeholder="SBIN0001234"

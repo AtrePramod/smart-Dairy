@@ -114,10 +114,10 @@
   border-radius: 12px; /* Softer rounded edges */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
   overflow: auto; /* Scroll if content overflows */
-  padding: 20px; /* Add padding for internal content */
+  padding: 15px; /* Add padding for internal content */
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Space between elements */
+  gap: 3px; /* Space between elements */
 }
 
 .modal .modal-content h2 {
@@ -141,7 +141,7 @@
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   box-sizing: border-box;
 }
 

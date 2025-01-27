@@ -7,6 +7,8 @@
 .forDWidth {
   min-width: 1141px !important;
 }
+.pramod label {
+}
 @media screen and (max-width: 426px) {
   .dealer {
     width: 100%;

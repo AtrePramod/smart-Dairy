@@ -13,6 +13,7 @@ const {
   createDealer,
   dealerList,
   deleteCustomer,
+  updateDealer,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.route("/create/customer").post(verifyToken, createCustomer);
 router.route("/create/dealer").post(verifyToken, createDealer);
 router.route("/dealer").post(verifyToken, dealerList);
 router.route("/delete/customer").post(verifyToken, deleteCustomer);
+router.route("/update/dealer").patch(verifyToken, updateDealer);
 
 router.route("/update/customer").post(verifyToken, updateCustomer);
 router.route("/customer/list").post(verifyToken, customerList);

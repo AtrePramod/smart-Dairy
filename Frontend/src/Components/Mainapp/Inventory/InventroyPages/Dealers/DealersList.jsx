@@ -5,9 +5,49 @@ import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
 
 const DealersList = () => {
   const [dealerList, setDealerList] = useState([]);
+
+  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+
+  const handleEditClick = (id) => {
+    setEditSale(id);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveChanges = async () => {
+    const updateCust = {
+      id: editSale.id,
+      cname: editSale.cname,
+      Phone: editSale.Phone,
+      City: editSale.City,
+      cust_ifsc: editSale.cust_ifsc,
+      dist: editSale.dist,
+      cust_accno: editSale.cust_accno,
+    };
+    // console.log(updateCust);
+    try {
+      const res = await axiosInstance.patch("/update/dealer", updateCust);
+      if (res?.data?.success) {
+        alert("Cust updated successfully");
+        setDealerList((prevCust) => {
+          return prevCust.map((item) => {
+            if (item.id === editSale.id) {
+              return { ...item, ...editSale };
+            }
+            return item;
+          });
+        });
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error updating cust:", error);
+    }
+  };
+
   const downloadExcel = () => {
     if (dealerList.length === 0) {
       alert("No data available to download.");
@@ -109,16 +149,19 @@ const DealersList = () => {
                 <span className="text w5">{index + 1}</span>
                 <span className="text w5">{customer.srno}</span>
                 <span className="text w25 t-start">{customer.cname}</span>
-                <span className="text w10">
-                  {customer.mobile || customer.Phone}
-                </span>
+                <span className="text w10">{customer.Phone}</span>
                 <span className="text w10">{customer.City}</span>
                 <span className="text w10">{customer.dist}</span>
                 {/* <span className="text w10">{customer.cust_pincode}</span> */}
                 <span className="text w15">{customer.cust_bankname}</span>
                 <span className="text w15">{customer.cust_accno}</span>
                 <span className="text w10">{customer.cust_ifsc}</span>
-                <span className="text w5">
+                <span className="text w10">
+                  <FaRegEdit
+                    size={15}
+                    className="table-icon"
+                    onClick={() => handleEditClick(customer)}
+                  />
                   <MdDeleteOutline
                     onClick={() => handleDelete(customer.cid)}
                     size={15}
@@ -133,6 +176,79 @@ const DealersList = () => {
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <div className="pramod modal">
+          <div className="modal-content">
+            <h2>Update Dealer Details</h2>
+            <label>
+              Customer Name:
+              <input
+                type="text"
+                value={editSale?.cname}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, cname: e.target.value })
+                }
+              />
+            </label>{" "}
+            <label>
+              Phone:
+              <input
+                type="number"
+                value={editSale?.Phone}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, Phone: e.target.value })
+                }
+              />
+            </label>
+            <div className="row d-flex my10">
+              <label>
+                City:
+                <input
+                  type="text"
+                  value={editSale?.City}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, City: e.target.value })
+                  }
+                />
+              </label>
+              <label style={{ marginLeft: "10px" }}>
+                District:
+                <input
+                  type="text"
+                  value={editSale?.dist}
+                  onChange={(e) =>
+                    setEditSale({ ...editSale, dist: e.target.value })
+                  }
+                />
+              </label>
+            </div>
+            <label>
+              Bank IFSC:
+              <input
+                type="text"
+                value={editSale?.cust_ifsc}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, cust_ifsc: e.target.value })
+                }
+              />
+            </label>
+            <label>
+              A/C No:
+              <input
+                type="number"
+                value={editSale?.cust_accno}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, cust_accno: e.target.value })
+                }
+              />
+            </label>
+            <div>
+              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
