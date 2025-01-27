@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
+import "../../Inventory/InventroyPages/productSale.css";
 
 const CreateCattleFeed = () => {
   const [cartItem, setCartItem] = useState([]);
