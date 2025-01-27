@@ -7,11 +7,46 @@ import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../App/axiosInstance";
 import "./Product.css";
 import { MdDeleteOutline } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
 
 const ProductsList = () => {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+
+  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+
+  const handleEditClick = (id) => {
+    setEditSale(id);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveChanges = async () => {
+    const updateItem = {
+      ItemCode: editSale.ItemCode,
+      ItemName: editSale.ItemName,
+      ItemDesc: editSale.ItemDesc,
+    };
+
+    try {
+      const res = await axiosInstance.put("/item/update", updateItem);
+      if (res?.data?.success) {
+        alert(res?.data?.message);
+        setProductList((prevCust) => {
+          return prevCust.map((item) => {
+            if (item.ItemCode === editSale.ItemCode) {
+              return { ...item, ...editSale };
+            }
+            return item;
+          });
+        });
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Error updating cust:", error);
+    }
+  };
 
   const downloadExcel = () => {
     // Filter products based on the selected ItemGroupCode
@@ -107,7 +142,7 @@ const ProductsList = () => {
       <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg">
         <span className="heading p10">Products List</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex forWidth center t-center sb">
+          <div className="data-headings-div h10 d-flex forWidth center t-center sa">
             <span className="f-info-text w5">Sr.No.</span>
             <span className="f-info-text w5">Item Code</span>
             {/* <span className="f-info-text w5">ItemGrpCode</span> */}
@@ -136,6 +171,11 @@ const ProductsList = () => {
                 <span className="text w20">{product.ItemDesc}</span>
                 {/* <span className="text w5">{product.companyid}</span> */}
                 <span className="text w5">
+                  <FaRegEdit
+                    size={15}
+                    className="table-icon"
+                    onClick={() => handleEditClick(product)}
+                  />
                   <MdDeleteOutline
                     onClick={() => handleDelete(product.ItemCode)}
                     size={15}
@@ -150,6 +190,37 @@ const ProductsList = () => {
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <div className="pramod modal">
+          <div className="modal-content">
+            <h2>Update Product Details</h2>
+            <label>
+              Item Name:
+              <input
+                type="text"
+                value={editSale?.ItemName}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, ItemName: e.target.value })
+                }
+              />
+            </label>{" "}
+            <label>
+              Item Desc:
+              <input
+                type="text"
+                value={editSale?.ItemDesc}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, ItemDesc: e.target.value })
+                }
+              />
+            </label>
+            <div>
+              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

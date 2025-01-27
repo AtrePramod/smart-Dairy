@@ -206,13 +206,13 @@ const CreateProducts = () => {
             </div>
           </div>
           <div className="row d-flex j-end my10">
-            <div className="col">
+            <div className="col my5">
               <button className="btn" type="submit">
                 Submit
               </button>
             </div>
             <div className="col">
-              <button className="btn" type="button" onClick={handleClear}>
+              <button className="btn my5" type="button" onClick={handleClear}>
                 Clear
               </button>
             </div>
