@@ -1,5 +1,6 @@
 const pool = require("../Configs/Database");
 
+//get all items
 exports.getAllItems = async (req, res) => {
   const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
   const { dairy_id: companyid } = req.user; // Get the company id from the user's session or request
@@ -51,6 +52,7 @@ exports.getAllItems = async (req, res) => {
   });
 };
 
+//
 exports.getAllGrpItems = async (req, res) => {
   const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
 

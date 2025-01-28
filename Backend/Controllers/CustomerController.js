@@ -250,6 +250,8 @@ exports.createCustomer = async (req, res) => {
 };
 
 // this code added by Pramod... start
+
+//create a new dealer controller
 exports.createDealer = async (req, res) => {
   const {
     cust_name,
@@ -377,6 +379,7 @@ exports.createDealer = async (req, res) => {
   });
 };
 
+//get all dealer list
 exports.dealerList = async (req, res) => {
   pool.getConnection((err, connection) => {
     if (err) {
@@ -429,6 +432,7 @@ exports.dealerList = async (req, res) => {
   });
 };
 
+// update delaer controller fun
 exports.updateDealer = async (req, res) => {
   const { id, cname, Phone, City, cust_ifsc, dist, cust_accno } = req.body;
 

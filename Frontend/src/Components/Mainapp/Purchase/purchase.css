@@ -5,7 +5,7 @@
 }
 
 .forDWidth {
-  min-width: 1141px !important;
+  min-width: 1056px !important;
 }
 
 @media screen and (max-width: 426px) {
@@ -16,4 +16,3 @@
     height: 100%;
   }
 }
-

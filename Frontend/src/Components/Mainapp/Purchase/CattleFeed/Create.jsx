@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
-import { useSelector } from "react-redux";
 import "../../Inventory/InventroyPages/productSale.css";
-
+import { toast } from "react-toastify";
 const Create = () => {
   // State variables for cart, customer info, date, etc.
   const [cartItem, setCartItem] = useState([]);
@@ -17,19 +16,10 @@ const Create = () => {
   const [selectitemcode, setSelectitemcode] = useState(0);
   const [amt, setAmt] = useState(0);
   const [rctno, setRctno] = useState(localStorage.getItem("receiptpurno") || 1);
-  const customerslist = useSelector((state) => state.customer.customerlist);
-  const [filterlist, setFilterlist] = useState([]);
-  const [userid, setUserid] = useState("");
+  const [dealerList, setDealerList] = useState([]);
   const [billNo, setBillNo] = useState("9112");
-
-  useEffect(() => {
-    console.log("Filtering customers with ctype = 2");
-    if (customerslist) {
-      const filtered = customerslist.filter((customer) => customer.ctype === 2);
-      setFilterlist(filtered);
-    }
-    console.log(filterlist);
-  }, []); // Added customerslist as dependency to ensure filtering updates when it changes
+  const [sellrate, setSellrate] = useState(0);
+  const [errors, setErrors] = useState({});
 
   // Fetch all items for the cattle feed sale
   useEffect(() => {
@@ -38,10 +28,25 @@ const Create = () => {
         const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1");
         setItemList(data.itemsData || []);
       } catch (error) {
-        console.error("Error fetching items:", error);
+        toast.error("Failed to fetch items. Please try again.");
       }
     };
     fetchAllItems();
+  }, []);
+
+  // Fetch all dealer
+  useEffect(() => {
+    const fetchDealerList = async () => {
+      try {
+        const response = await axiosInstance.post("/dealer");
+        let customers = response?.data?.customerList || [];
+        customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
+        setDealerList(customers);
+      } catch (error) {
+        toast.error("Failed to fetch Dealer. Please try again.");
+      }
+    };
+    fetchDealerList();
   }, []);
 
   // Set today's date
@@ -49,19 +54,33 @@ const Create = () => {
     setDate(getTodaysDate());
   }, []);
 
-  // Set customer name and ID based on the farmer code
+  // Set customer name on the dealer code
   useEffect(() => {
-    if (filterlist.length > 0) {
-      console.log(filterlist);
-      const customer = filterlist.find(
+    if (fcode) {
+      const dealer = dealerList.find(
         (customer) => customer.srno === parseInt(fcode)
       );
-      setCname(customer?.cname || "");
-      setUserid(customer?.rno || "");
+      if (dealer) {
+        setCname(dealer.cname);
+      } else {
+        setCname(""); // Reset if code doesn't match
+      }
     } else {
       setCname("");
     }
-  }, [fcode, filterlist]);
+  }, [fcode, dealerList]);
+
+  // Set dealer code on the dealer name
+  useEffect(() => {
+    if (cname) {
+      const dealer = dealerList.find((customer) => customer.cname === cname);
+      if (dealer) {
+        setFcode(dealer.srno.toString());
+      } else {
+        setFcode(""); // Reset if name doesn't match
+      }
+    }
+  }, [cname, dealerList]);
 
   // Update the amount whenever rate or quantity changes
   useEffect(() => {
@@ -73,44 +92,58 @@ const Create = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   };
+  const validateForm = () => {
+    const newErrors = {};
 
-  // Function to find item name based on item code
-  const handleFindItemName = (id) => {
-    const selectedItem = itemList.find((item) => item.ItemCode === id);
-    return selectedItem.ItemName;
+    if (!date) newErrors.date = "date is required";
+    if (!rctno) newErrors.rctno = "Receipt No is required";
+    if (!fcode) newErrors.fcode = "Dealer code is required";
+    if (!cname) newErrors.cname = "Dealer name is required";
+    if (!selectitemcode) newErrors.selectitemcode = "Item is required";
+    if (qty <= 0) newErrors.qty = "Quantity must be greater than 0";
+    if (rate <= 0) newErrors.rate = "Rate must be greater than 0";
+    if (sellrate < rate)
+      newErrors.sellrate = "Sale rate must be greater than Purchase Rate";
+    return newErrors;
   };
 
   // Add item to the cart
-  const handleAddToCart = () => {
-    if (selectitemcode > 0 && qty > 0 && rate > 0) {
-      const selectedItem = itemList.find(
-        (item) => item.ItemCode === selectitemcode
-      );
-      const newCartItem = {
-        companyid: selectedItem?.companyid,
-        receiptpurno: rctno, // Receipt No
-        userid: userid,
-        BillNo: billNo,
-        ItemCode: selectedItem?.ItemCode,
-        BillDate: date + " 00:00:00",
-        Qty: qty,
-        CustCode: fcode,
-        ItemGroupCode: 1, // update Itemgroupcode
-        Rate: rate,
-        Amount: qty * rate,
-      };
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    const newErrors = validateForm();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      if (selectitemcode > 0 && qty > 0 && rate > 0) {
+        const selectedItem = itemList.find(
+          (item) => item.ItemCode === selectitemcode
+        );
+        const newCartItem = {
+          receiptno: rctno, // Receipt No
+          dealerCode: fcode,
+          dealerName: cname,
+          billno: billNo,
+          itemcode: selectedItem?.ItemCode,
+          itemname: selectedItem?.ItemName,
+          purchasedate: date + " 00:00:00",
+          qty: qty,
+          itemgroupcode: 1, // update Itemgroupcode
+          rate: rate,
+          amount: qty * rate,
+          salerate: parseInt(sellrate),
+        };
 
-      // Update the cart items
-      setCartItem((prev) => {
-        const updatedCart = [...prev, newCartItem];
-        return updatedCart;
-      });
+        // Update the cart items
+        setCartItem((prev) => [...prev, newCartItem]);
 
-      // Reset input values
-      setQty(1);
-      setRate(0);
-      setAmt(0);
-      setSelectitemcode(0);
+        // Reset input values
+        setQty(1);
+        setRate(0);
+        setAmt(0);
+        setSelectitemcode(0);
+        setSellrate(0);
+      } else {
+        toast.error("Please select item and enter quantity and rate");
+      }
     }
   };
 
@@ -121,7 +154,7 @@ const Create = () => {
       setBillNo(`9${timestamp}`);
     };
     generateBillNo();
-  }, []);
+  }, [rctno]);
 
   // Delete an item from the cart
   const handleDeleteItem = (id) => {
@@ -139,64 +172,41 @@ const Create = () => {
     setRate(0);
     setAmt(0);
     setSelectitemcode(0);
+    setSellrate(0);
+    setErrors([]);
   };
 
   // Handle form submission and send cart data to the server
   const handleSubmit = async () => {
     if (cartItem.length > 0) {
       try {
-        const res = await axiosInstance.post("/sale/create", cartItem);
+        const res = await axiosInstance.post("/purchase/new", cartItem);
         if (res?.data?.success) {
-          setFcode("");
-          setCartItem([]);
-          setQty(1);
-          setRate(0);
-          setAmt(0);
+          handelClear();
           setRctno(parseInt(rctno) + 1);
-          setSelectitemcode(0);
-          alert(res.data.message);
-          const timestamp = Date.now();
-          setBillNo(`9${timestamp}`);
+          toast.success(res.data.message);
           localStorage.setItem("receiptpurno", parseInt(rctno) + 1);
         }
       } catch (error) {
         console.error("Error Submitting items:", error);
       }
-    }
-  };
 
-  // Function to handle printing the invoice
-  const handlePrint = () => {
-    const printWindow = window.open("", "_blank");
-    const printContent = document.getElementById("print-section").innerHTML;
-
-    if (printWindow) {
-      printWindow.document.write(
-        `
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          #print-section { width: 100%; display: flex; flex-direction: row; justify-content: space-between; gap: 1cm; padding: 1cm; }
-          .invoice { width: 48%; border: 1px solid black; padding: 1cm; box-sizing: border-box; }
-          .invoice-table { width: 100%; border-collapse: collapse; }
-          .invoice-table th, .invoice-table td { border: 1px solid black; padding: 5px; text-align: left; word-wrap: break-word; }
-          body { font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div id="print-section">${printContent}</div>
-      </body>
-    </html>
-    `
-      );
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
+      // console.log("Submit data: ", cartItem);
     } else {
-      alert("Failed to open print window. Check pop-up settings.");
+      toast.error("Please add items to the cart.");
     }
   };
+
+  // Handle Enter key press to move to the next field
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  };
+
   return (
     <div className="sale-add  w100">
       <div className="form w100 bg">
@@ -206,22 +216,30 @@ const Create = () => {
             <label className="info-text px10">Date:</label>
             <input
               type="date"
-              className="data"
+              id="date"
+              className={`data ${errors.date ? "input-error" : ""}`}
               name="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={date}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("rctno"))
+              }
             />
-          </div>{" "}
+          </div>
           <div className="col">
             <label className="info-text px10">Receipt No:</label>
             <input
               type="number"
+              id="rctno"
               name="number"
               value={rctno}
-              className="data"
+              className={`data ${errors.rctno ? "input-error" : ""}`}
               onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
               min="0"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("fcode"))
+              }
             />
           </div>
         </div>
@@ -230,76 +248,115 @@ const Create = () => {
             <label className="info-text px10">Dealer Code:</label>
             <input
               type="number"
+              id="fcode"
               name="code"
-              className="data"
+              className={`data ${errors.fcode ? "input-error" : ""}`}
               value={fcode}
               onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
               min="0"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("cname"))
+              }
             />
           </div>
           <div className="col">
-            <label className="info-text px10">Farmer Name:</label>
-            <input
-              type="text"
-              name="fname"
-              className="data"
+            <label className="info-text px10">Dealer Name:</label>
+            <select
+              id="cname"
               value={cname}
-              readOnly
-            />
+              className={`data ${errors.cname ? "input-error" : ""}`}
+              onChange={(e) => setCname(e.target.value)}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("selectitemcode"))
+              }
+            >
+              <option value="">Select Dealer</option>
+              {dealerList.map((item, i) => (
+                <option key={i} value={item.cname}>
+                  {item.cname}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+
         <div className="row">
           <div className="col">
             <label className="info-text px10">Select Items:</label>
-            {itemList.length > 0 && (
-              <select
-                disabled={!cname}
-                value={selectitemcode}
-                className="data"
-                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
-              >
-                <option value="0">Select Item</option>
-                {itemList.map((item, i) => (
+
+            <select
+              id="selectitemcode"
+              disabled={!cname}
+              value={selectitemcode}
+              className={`data ${errors.selectitemcode ? "input-error" : ""}`}
+              onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("qty"))
+              }
+            >
+              <option value="0">Select Item</option>
+              {itemList.length > 0 &&
+                itemList.map((item, i) => (
                   <option key={i} value={item.ItemCode}>
                     {item.ItemName}
                   </option>
                 ))}
-              </select>
-            )}
+            </select>
+          </div>
+          <div className="col">
+            <label className="info-text px10">QTY:</label>
+            <input
+              id="qty"
+              disabled={!selectitemcode}
+              type="number"
+              value={qty}
+              className={`data ${errors.qty ? "input-error" : ""}`}
+              name="qty"
+              min="1"
+              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("rate"))
+              }
+            />
           </div>
         </div>
         <div className="row">
           <div className="col">
-            <label className="info-text px10">QTY:</label>
+            <label className="info-text px10">Purchase Rate:</label>
             <input
-              disabled={!selectitemcode}
+              id="rate"
               type="number"
-              value={qty}
-              className="data"
-              name="qty"
-              min="1"
-              onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
+              name="rate"
+              className={`data ${errors.rate ? "input-error" : ""}`}
+              value={rate}
+              onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
+              min="0"
+              disabled={!selectitemcode}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("sellrate"))
+              }
+            />
+          </div>
+          <div className="col">
+            <label className="info-text px10">Sale Rate:</label>
+            <input
+              id="sellrate"
+              type="number"
+              name="rate"
+              className={`data ${errors.sellrate ? "input-error" : ""}`}
+              value={sellrate}
+              onChange={(e) => setSellrate(e.target.value)}
+              disabled={!selectitemcode}
             />
           </div>
         </div>
         <div className="row w100  d-flex a-center">
           <div className="col">
-            <label className="info-text px10">Rate:</label>
-            <input
-              type="number"
-              name="rate"
-              className="data"
-              value={rate}
-              onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
-              min="0"
-              disabled={!selectitemcode}
-            />
-          </div>
-          <div className="col">
             <label className="info-text px10">Amount:</label>
             <input
+              id="amt"
               type="number"
-              className="data"
+              className={`data ${errors.amt ? "input-error" : ""}`}
               name="amount"
               value={amt}
               readOnly
@@ -311,19 +368,12 @@ const Create = () => {
             Add to Cart
           </button>
 
-          <button
-            className="w-btn"
-            onClick={handleSubmit}
-            disabled={cartItem.length == 0}
-          >
-            Save
-          </button>
-
           <button className="w-btn" onClick={handelClear}>
             Clear
           </button>
         </div>
       </div>
+
       <div className="for-table mx15 px10 w100">
         <div className="modal-content w100  ">
           <div className="header">
@@ -346,10 +396,10 @@ const Create = () => {
                 {cartItem.map((item, i) => (
                   <tr key={i}>
                     <td>{i + 1}</td>
-                    <td>{handleFindItemName(item.ItemCode)}</td>
-                    <td>{item.Rate}</td>
-                    <td>{item.Qty}</td>
-                    <td>{item.Amount}</td>
+                    <td>{item.itemname}</td>
+                    <td>{item.rate}</td>
+                    <td>{item.qty}</td>
+                    <td>{item.amount}</td>
                     <td>
                       <MdDeleteOutline
                         size={20}
@@ -368,7 +418,7 @@ const Create = () => {
                     <b>Total</b>
                   </td>
                   <td>
-                    {cartItem.reduce((acc, item) => acc + item.Amount, 0)}
+                    {cartItem.reduce((acc, item) => acc + item.amount, 0)}
                   </td>
                   <td></td>
                 </tr>
@@ -376,66 +426,9 @@ const Create = () => {
             </table>
           </div>
 
-          <div id="print-section" style={{ display: "none" }}>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>10</td>
-                    <td>50</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>500</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>15</td>
-                    <td>75</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>1125</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="w100 d-flex j-end  my10">
-            <button className="w-btn" onClick={handlePrint}>
-              Print
+          <div className="w100 d-flex  my10">
+            <button className="w-btn" onClick={handleSubmit}>
+              save
             </button>
           </div>
         </div>

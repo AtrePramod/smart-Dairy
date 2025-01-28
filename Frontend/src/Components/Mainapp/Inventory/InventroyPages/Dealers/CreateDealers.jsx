@@ -53,7 +53,7 @@ const CreateDealers = () => {
     e.preventDefault();
     const newErrors = validateForm();
     setErrors(newErrors);
-    console.log(newErrors);
+    // console.log(newErrors);
     if (Object.keys(newErrors).length === 0) {
       // console.log("out try");
       try {

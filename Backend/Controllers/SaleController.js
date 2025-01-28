@@ -222,6 +222,8 @@ exports.createSales = async (req, res) => {
 //     });
 //   });
 // };
+
+//its use for getting all sales with dynamic query
 exports.getPaginatedSales = async (req, res) => {
   const { date1, date2, fcode, ...dynamicFields } = req.query;
 
