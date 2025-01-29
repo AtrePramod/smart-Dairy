@@ -3,138 +3,237 @@ import React, { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { FaDownload } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
-import { FaRegEdit } from "react-icons/fa";
 import axiosInstance from "../../../../App/axiosInstance";
+import { toast } from "react-toastify";
+import "../purchase.css";
+import { IoClose } from "react-icons/io5";
+
 const List = () => {
+  const [purchaseList, setPurchaseList] = useState([]);
   const [dealerList, setDealerList] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [fcode, setFcode] = useState("");
 
-  const handleEditClick = (id) => {
-    setEditSale(id);
-    setIsModalOpen(true);
-  };
+  const [date1, SetDate1] = useState("");
+  const [date2, SetDate2] = useState("");
 
-  const handleSaveChanges = async () => {
-    const updateCust = {
-      id: editSale.id,
-      cname: editSale.cname,
-      Phone: editSale.Phone,
-      City: editSale.City,
-      cust_ifsc: editSale.cust_ifsc,
-      dist: editSale.dist,
-      cust_accno: editSale.cust_accno,
-    };
-    // console.log(updateCust);
-    try {
-      const res = await axiosInstance.patch("/update/dealer", updateCust);
-      if (res?.data?.success) {
-        alert("Cust updated successfully");
-        setDealerList((prevCust) => {
-          return prevCust.map((item) => {
-            if (item.id === editSale.id) {
-              return { ...item, ...editSale };
-            }
-            return item;
-          });
-        });
-        setIsModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error updating cust:", error);
-    }
-  };
+  const [updatelist, setUpdateList] = useState([]);
 
-  const downloadExcel = () => {
-    if (dealerList.length === 0) {
-      alert("No data available to download.");
-      return;
-    }
-
-    // Map dealerList to create a formatted array of objects
-    const formattedData = dealerList.map((customer, index) => ({
-      "Sr No": index + 1,
-      Code: customer.srno,
-      "Customer Name": customer.cname,
-      Mobile: customer.mobile || customer.Phone,
-      City: customer.City,
-      District: customer.dist,
-      "Bank Name": customer.cust_bankname,
-      "A/C No": customer.cust_accno,
-      IFSC: customer.cust_ifsc,
-    }));
-
-    // Create a new worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = XLSX.utils.book_new();
-
-    // Append the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Dealers List");
-
-    // Write the workbook and download it
-    XLSX.writeFile(workbook, "Dealers_List.xlsx");
-  };
-
+  // Fetch dealer list from API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
         const response = await axiosInstance.post("/dealer");
         let customers = response?.data?.customerList || [];
-        // Sort customers by createdon in descending order (newest first)
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
       } catch (error) {
-        console.error("Error fetching dealer list: ", error);
-        alert("There was an error fetching the dealer list.");
+        toast.error("Failed to fetch dealer list. Please try again.");
       }
     };
     fetchDealerList();
   }, []);
 
-  const handleDelete = async (cid) => {
-    if (confirm("Are you sure you want to Delete?")) {
-      try {
-        // console.log("saleid", id);
-        const res = await axiosInstance.post("/delete/customer", { cid }); // Replace with your actual API URL
-        alert(res?.data?.message);
+  // Handle view button click for purchase list
+  const handleEditClick = (id) => {
+    const filterList = purchaseList.filter((item) => item.billno === id) || [];
+    setUpdateList(filterList);
+    setIsModalOpen(true);
+  };
 
-        setDealerList((prevSales) =>
-          prevSales.filter((sale) => sale.cid !== cid)
+  // Fetch purchase list from API
+  useEffect(() => {
+    const fetchPurchaseList = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "/purchase/all?itemgroupcode=3"
+        );
+        let purchase = response?.data?.purchaseData || [];
+        purchase.sort(
+          (a, b) => new Date(b.purchasedate) - new Date(a.purchasedate)
+        );
+        setPurchaseList(purchase);
+      } catch (error) {
+        toast.error("Error fetching purchase list.");
+      }
+    };
+    fetchPurchaseList();
+  }, []);
+
+  // Function to delete a purchase item
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      try {
+        const res = await axiosInstance.delete(`/purchase/delete/${id}`);
+        toast.success(res?.data?.message);
+        setPurchaseList((prevItems) =>
+          prevItems.filter((item) => item.billno !== id)
         );
       } catch (error) {
-        console.error("Error deleting sale item:", error);
+        toast.error("Error deleting purchase item.");
       }
     }
   };
 
+  // Function to get today's date in YYYY-MM-DD format
+  const getTodaysDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  // Function to get date from X days ago
+  const getPreviousDate = (daysAgo) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString().split("T")[0];
+  };
+
+  useEffect(() => {
+    SetDate1(getPreviousDate(10));
+    SetDate2(getTodaysDate());
+  }, []);
+
+  // Function to download dealer list as an Excel file
+  const downloadExcel = () => {
+    if (dealerList.length === 0) {
+      toast.warn("No data available to download.");
+      return;
+    }
+
+    const formattedData = purchaseList.map((item) => ({
+      PurchaseDate: formatDateToDDMMYYYY(item.purchasedate),
+      InvoiceIdBillNo: item.receiptno,
+      SupplierCode: item.dealerCode,
+      CustName: item.dealerName,
+      ItemCode: item.itemcode,
+      ItemName: item.itemname,
+      Qty: item.qty,
+      Rate: item.rate,
+      Amt: item.amount,
+      "cgst%": item.cgst || 0,
+      "sgst%": item.sgst || 0,
+      CN: item.cn || 0,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.writeFile(workbook, `PurchaseData_${date1}_to_${date2}.xlsx`);
+  };
+
+  // Group purchase by bill number
+  const groupedPurchase = (purchaseList || []).reduce((acc, item) => {
+    const key = item.billno;
+    if (!acc[key]) {
+      acc[key] = { ...item, TotalAmount: 0 };
+    }
+    acc[key].TotalAmount += item.amount;
+    return acc;
+  }, {});
+
+  const groupedPurchaseArray = Object.values(groupedPurchase);
+
+  // Function to fetch purchase data based on date and dealer code filt
+  const handleShowbutton = async () => {
+    const getItem = {
+      date1,
+      date2,
+      ...(fcode && { dealerCode: fcode }), // Include fcode only if it has a value
+    };
+    // console.log(getItem);
+    try {
+      const queryParams = new URLSearchParams(getItem).toString();
+      const { data } = await axiosInstance.get(
+        `/purchase/all?ItemGroupCode=3&${queryParams}`
+      );
+      // console.log(data);
+      if (data?.success) {
+        setPurchaseList(data.purchaseData || []);
+      } else {
+        setPurchaseList([]);
+      }
+    } catch (error) {
+      toast.error("Error fetching Purchase items");
+      setPurchaseList([]);
+    }
+  };
+  const formatDateToDDMMYYYY = (dateStr) => {
+    const date = new Date(dateStr); // Parse the ISO string
+    const day = String(date.getDate()).padStart(2, "0"); // Ensures two digits for day
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensures two digits for month
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
-      <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
-        <button className="btn" onClick={downloadExcel}>
-          <span className="f-label-text px10">Download Excel</span>
-          <FaDownload />
-        </button>
+      <div
+        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
+        style={{ display: "contents" }}
+      >
+        <div className="w100 d-flex sa my5 f-wrap">
+          <div className="my10">
+            <label htmlFor="" className="info-text px10">
+              Date:
+            </label>
+            <input
+              type="date"
+              className="data"
+              value={date1}
+              onChange={(e) => SetDate1(e.target.value)}
+              max={date2}
+            />
+          </div>
+          <div className="my10">
+            <label className="info-text px10" htmlFor="">
+              To Date:
+            </label>
+            <input
+              type="date"
+              name="date"
+              className="data"
+              value={date2}
+              onChange={(e) => SetDate2(e.target.value)}
+              min={date1}
+            />
+          </div>
+          <div className="my10">
+            <label htmlFor="" className="info-text px10">
+              Dealer Code
+            </label>
+            <input
+              type="number"
+              className="data"
+              name="code"
+              value={fcode}
+              onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
+              min="0"
+            />
+          </div>
+        </div>
+        <div className="w100 d-flex sa my5">
+          <button className="w-btn" onClick={handleShowbutton}>
+            Show
+          </button>
+          <button className="w-btn" onClick={downloadExcel}>
+            Export Excel
+          </button>
+        </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Dealers List</span>
+        <span className="heading p10">Grocery List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
             <span className="f-info-text w5">SrNo</span>
-            <span className="f-info-text w5">Code</span>
-            <span className="f-info-text w25">Customer Name</span>
-            <span className="f-info-text w10">Mobile</span>
-            <span className="f-info-text w10">City</span>
-            <span className="f-info-text w10">District</span>
-            {/* <span className="f-info-text w10">PinCode</span> */}
-            <span className="f-info-text w15">Bank Name</span>
-            <span className="f-info-text w15">A/C No</span>
-            <span className="f-info-text w10">IFSC</span>
+            <span className="f-info-text w5">Date</span>
+            <span className="f-info-text w5">Rec. No</span>
+            <span className="f-info-text w10">Dealer Code</span>
+            <span className="f-info-text w15">Dealer Name</span>
+            <span className="f-info-text w10">Total Amount</span>
             <span className="f-info-text w10">Actions</span>
           </div>
-          {/* Show Spinner if loading, otherwise show the customer list */}
-          {dealerList.length > 0 ? (
-            dealerList.map((customer, index) => (
+          {groupedPurchaseArray.length > 0 ? (
+            groupedPurchaseArray.map((item, index) => (
               <div
                 key={index}
                 className={`data-values-div w100 h10 d-flex forDWidth center t-center sa ${
@@ -145,104 +244,93 @@ const List = () => {
                 }}
               >
                 <span className="text w5">{index + 1}</span>
-                <span className="text w5">{customer.srno}</span>
-                <span className="text w25 t-start">{customer.cname}</span>
-                <span className="text w10">{customer.Phone}</span>
-                <span className="text w10">{customer.City}</span>
-                <span className="text w10">{customer.dist}</span>
-                {/* <span className="text w10">{customer.cust_pincode}</span> */}
-                <span className="text w15">{customer.cust_bankname}</span>
-                <span className="text w15">{customer.cust_accno}</span>
-                <span className="text w10">{customer.cust_ifsc}</span>
-                <span className="text w10">
-                  <FaRegEdit
-                    size={15}
-                    className="table-icon"
-                    onClick={() => handleEditClick(customer)}
-                  />
+                <span className="text w5">
+                  {new Date(item.purchasedate).toLocaleDateString("en-US", {
+                    dateStyle: "short",
+                  })}
+                </span>
+                <span className="text w5">{item.receiptno}</span>
+                <span className="text w10">{item.dealerCode}</span>
+                <span className="text w15">{item.dealerName || "Unknown"}</span>
+                <span className="text w10">{item.TotalAmount}</span>
+                <span className="text w10 d-flex j-center a-center">
+                  <button
+                    style={{ cursor: "pointer" }}
+                    className="px5 "
+                    onClick={() => handleEditClick(item.billno)}
+                  >
+                    View
+                  </button>
                   <MdDeleteOutline
-                    onClick={() => handleDelete(customer.cid)}
-                    size={15}
-                    className="table-icon "
+                    onClick={() => handleDelete(item.billno)}
+                    size={17}
+                    className="table-icon"
                     style={{ color: "red" }}
                   />
                 </span>
               </div>
             ))
           ) : (
-            <div>No customer found</div>
+            <div>No purchases found</div>
           )}
         </div>
       </div>
-      {isModalOpen && (
+      {isModalOpen && updatelist.length > 0 && (
         <div className="pramod modal">
           <div className="modal-content">
-            <h2>Update Dealer Details</h2>
-            <label>
-              Customer Name:
-              <input
-                type="text"
-                value={editSale?.cname}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, cname: e.target.value })
-                }
+            <div className="d-flex sb">
+              <h2>View Purchase Details</h2>
+              <IoClose
+                style={{ cursor: "pointer" }}
+                size={25}
+                onClick={() => setIsModalOpen(false)}
               />
-            </label>{" "}
-            <label>
-              Phone:
-              <input
-                type="number"
-                value={editSale?.Phone}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, Phone: e.target.value })
-                }
-              />
-            </label>
-            <div className="row d-flex my10">
-              <label>
-                City:
-                <input
-                  type="text"
-                  value={editSale?.City}
-                  onChange={(e) =>
-                    setEditSale({ ...editSale, City: e.target.value })
-                  }
-                />
-              </label>
-              <label style={{ marginLeft: "10px" }}>
-                District:
-                <input
-                  type="text"
-                  value={editSale?.dist}
-                  onChange={(e) =>
-                    setEditSale({ ...editSale, dist: e.target.value })
-                  }
-                />
-              </label>
             </div>
-            <label>
-              Bank IFSC:
-              <input
-                type="text"
-                value={editSale?.cust_ifsc}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, cust_ifsc: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              A/C No:
-              <input
-                type="number"
-                value={editSale?.cust_accno}
-                onChange={(e) =>
-                  setEditSale({ ...editSale, cust_accno: e.target.value })
-                }
-              />
-            </label>
-            <div>
-              <button onClick={handleSaveChanges}>Update</button>
-              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+            <hr />
+            <div className="my5 d-flex sa">
+              <h4>Dealer Name : {updatelist[0]?.dealerName || ""}</h4>
+              <h4>Dealer code : {updatelist[0]?.dealerCode || ""}</h4>
+            </div>
+
+            <div className="modal-content w100  ">
+              <div className="sales-table-container w100">
+                <table className="sales-table w100 ">
+                  <thead className="bg2">
+                    <tr>
+                      <th>SrNo</th>
+                      <th>Item Name</th>
+                      <th>Rate</th>
+                      <th>Qty</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {updatelist.map((item, i) => (
+                      <tr key={i}>
+                        <td>{i + 1}</td>
+                        <td>{item.itemname}</td>
+                        <td>{item.rate}</td>
+                        <td>{item.qty}</td>
+                        <td>{item.amount}</td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <b>Total</b>
+                      </td>
+                      <td>
+                        {(updatelist || []).reduce(
+                          (acc, item) => acc + (item.amount || 0),
+                          0
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -250,4 +338,5 @@ const List = () => {
     </div>
   );
 };
+
 export default List;
