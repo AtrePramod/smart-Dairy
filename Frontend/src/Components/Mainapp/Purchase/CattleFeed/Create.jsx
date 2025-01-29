@@ -21,7 +21,7 @@ const Create = () => {
   const [sellrate, setSellrate] = useState(0);
   const [errors, setErrors] = useState({});
 
-  // Fetch all items for the cattle feed sale
+  // Fetch all items from API GRP wise
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
@@ -34,7 +34,7 @@ const Create = () => {
     fetchAllItems();
   }, []);
 
-  // Fetch all dealer
+  // Fetch all dealer from API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
@@ -189,6 +189,7 @@ const Create = () => {
         }
       } catch (error) {
         console.error("Error Submitting items:", error);
+        toast.error("Submitting items Error");
       }
 
       // console.log("Submit data: ", cartItem);
