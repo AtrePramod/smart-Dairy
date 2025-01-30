@@ -35,6 +35,7 @@ import CattleFeedPurMaster from "./Purchase/CattleFeed/CattleFeedMaster";
 import GroceryPurMaster from "./Purchase/Grocery/GroceryMaster";
 import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
+import Test from "./Sales/Test";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -78,6 +79,7 @@ const Mainappviews = ({ index }) => {
     //Sales Submenus
     case 5.1:
       return <CattleFeedMaster />;
+    // return <Test />;
     case 5.2:
       return <MedicinesMaster />;
     case 5.3:

@@ -22,7 +22,7 @@ const CattleSaleList = () => {
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
-      BillNo: sale.BillNo,
+      BillNo: sale.ReceiptNo,
       custCode: sale.CustCode,
       custName: handleFindCustName(sale.CustCode),
       ItemCode: sale.ItemCode,

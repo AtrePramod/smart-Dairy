@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
-import "../../Inventory/InventroyPages/productSale.css";
+import "../sales.css";
 
 const CreateCattleFeed = () => {
   // State variables for cart, customer info, date, etc.
@@ -20,13 +20,17 @@ const CreateCattleFeed = () => {
   const customerslist = useSelector((state) => state.customer.customerlist);
   const [userid, setUserid] = useState("");
   const [billNo, setBillNo] = useState("9112");
-
+  const [purchaseData, setPurchaseData] = useState([]);
   // Fetch all items for the cattle feed sale
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
         const { data } = await axiosInstance.get("/item/all?ItemGroupCode=1");
-        setItemList(data.itemsData || []);
+        if (data.itemsData) {
+          setItemList(data.itemsData);
+        } else {
+          console.warn("No items data found");
+        }
       } catch (error) {
         console.error("Error fetching items:", error);
       }
@@ -41,16 +45,36 @@ const CreateCattleFeed = () => {
 
   // Set customer name and ID based on the farmer code
   useEffect(() => {
-    if (customerslist.length > 0) {
+    if (customerslist.length > 0 && fcode) {
       const customer = customerslist.find(
         (customer) => customer.srno === parseInt(fcode)
       );
-      setCname(customer?.cname || "");
-      setUserid(customer?.rno || "");
+      if (customer) {
+        setCname(customer.cname || "");
+        setUserid(customer.rno || "");
+      } else {
+        setCname("");
+        setUserid("");
+      }
     } else {
       setCname("");
+      setUserid("");
     }
   }, [fcode, customerslist]);
+
+  // Set customer code (fcode) based on cname
+  useEffect(() => {
+    if (cname && customerslist.length > 0) {
+      const custname = customerslist.find((item) => item.cname === cname);
+      if (custname) {
+        setFcode(custname.srno ?? "");
+      } else {
+        setFcode("");
+      }
+    } else {
+      setFcode("");
+    }
+  }, [cname, customerslist]);
 
   // Update the amount whenever rate or quantity changes
   useEffect(() => {
@@ -154,14 +178,44 @@ const CreateCattleFeed = () => {
     }
   };
 
+  // get rate of item from purchasemaster
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axiosInstance.get("/purchase/all?itemgroupcode=1");
+        if (res?.data?.purchaseData) {
+          setPurchaseData(res.data.purchaseData);
+          // console.log(res.data.purchaseData);
+        }
+      } catch (error) {
+        console.log("Rate fetching:", error);
+      }
+    };
+    fetch();
+  }, []);
+
+  //use set rate in rate field
+  useEffect(() => {
+    if (purchaseData.length > 0) {
+      const sortedPurchaseData = [...purchaseData].sort(
+        (a, b) => new Date(b.purchaseid) - new Date(a.purchaseid)
+      );
+      const rateItem = sortedPurchaseData.find(
+        (item) => item.itemcode === selectitemcode
+      );
+      setRate(rateItem?.salerate ?? "");
+    }
+  }, [selectitemcode]);
+
   // Function to handle printing the invoice
   const handlePrint = () => {
-    const printWindow = window.open("", "_blank");
-    const printContent = document.getElementById("print-section").innerHTML;
+    if (cartItem.length > 0) {
+      const printWindow = window.open("", "_blank");
+      const printContent = document.getElementById("print-section").innerHTML;
 
-    if (printWindow) {
-      printWindow.document.write(
-        `
+      if (printWindow) {
+        printWindow.document.write(
+          `
     <html>
       <head>
         <title>Print</title>
@@ -178,13 +232,29 @@ const CreateCattleFeed = () => {
       </body>
     </html>
     `
-      );
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-    } else {
-      alert("Failed to open print window. Check pop-up settings.");
+        );
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      } else {
+        alert("Failed to open print window. Check pop-up settings.");
+      }
     }
+  };
+
+  // Handle Enter key press to move to the next field
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
+      }
+    }
+  };
+
+  // Select all the text when input is focused
+  const handleFocus = (e) => {
+    e.target.select();
   };
 
   return (
@@ -209,6 +279,7 @@ const CreateCattleFeed = () => {
               type="number"
               name="number"
               value={rctno}
+              onFocus={handleFocus}
               className="data"
               onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
               min="0"
@@ -225,6 +296,10 @@ const CreateCattleFeed = () => {
               value={fcode}
               onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
               min="0"
+              onFocus={handleFocus}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("selectitemcode"))
+              }
             />
           </div>
           <div className="col">
@@ -233,9 +308,23 @@ const CreateCattleFeed = () => {
               type="text"
               name="fname"
               className="data"
+              list="farmer-list"
+              onFocus={handleFocus}
               value={cname}
-              readOnly
+              onChange={(e) => setCname(e.target.value)}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("selectitemcode"))
+              }
             />
+            <datalist id="farmer-list">
+              {customerslist
+                .filter((customer) =>
+                  customer.cname.toLowerCase().includes(cname.toLowerCase())
+                )
+                .map((customer, index) => (
+                  <option key={index} value={customer.cname} />
+                ))}
+            </datalist>
           </div>
         </div>
         <div className="row">
@@ -244,9 +333,13 @@ const CreateCattleFeed = () => {
             {itemList.length > 0 && (
               <select
                 disabled={!cname}
+                id="selectitemcode"
                 value={selectitemcode}
                 className="data"
                 onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("qty"))
+                }
               >
                 <option value="0">Select Item</option>
                 {itemList.map((item, i) => (
@@ -257,29 +350,38 @@ const CreateCattleFeed = () => {
               </select>
             )}
           </div>
-        </div>
-        <div className="row">
           <div className="col">
             <label className="info-text px10">QTY:</label>
             <input
               disabled={!selectitemcode}
               type="number"
               value={qty}
+              onFocus={handleFocus}
               className="data"
+              id="qty"
               name="qty"
               min="1"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("rate"))
+              }
               onChange={(e) => setQty(Math.max(1, parseInt(e.target.value)))}
             />
           </div>
         </div>
-        <div className="row w100  d-flex a-center">
+        <div className="row"></div>
+        <div className="row w100  d-flex ">
           <div className="col">
             <label className="info-text px10">Rate:</label>
             <input
               type="number"
               name="rate"
+              id="rate"
               className="data"
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("addtocart"))
+              }
               value={rate}
+              onFocus={handleFocus}
               onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
               min="0"
               disabled={!selectitemcode}
@@ -296,21 +398,9 @@ const CreateCattleFeed = () => {
             />
           </div>
         </div>
-        <div className=" d-flex sa my10">
-          <button className="w-btn" onClick={handleAddToCart}>
+        <div className=" d-flex j-end my10">
+          <button className="btn" id="addtocart" onClick={handleAddToCart}>
             Add to Cart
-          </button>
-
-          <button
-            className="w-btn"
-            onClick={handleSubmit}
-            disabled={cartItem.length == 0}
-          >
-            Save
-          </button>
-
-          <button className="w-btn" onClick={handelClear}>
-            Clear
           </button>
         </div>
       </div>
@@ -424,8 +514,19 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="w100 d-flex j-end  my10">
-            <button className="w-btn" onClick={handlePrint}>
+            <button
+              className="w-btn "
+              onClick={handleSubmit}
+              disabled={cartItem.length == 0}
+            >
+              Save
+            </button>
+
+            <button className="w-btn mx15" onClick={handlePrint}>
               Print
+            </button>
+            <button className="w-btn " onClick={handelClear}>
+              Clear
             </button>
           </div>
         </div>

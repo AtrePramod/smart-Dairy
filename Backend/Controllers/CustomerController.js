@@ -300,8 +300,8 @@ exports.createDealer = async (req, res) => {
           INSERT INTO customer (
             cid, cname, Phone, City, dist, cust_accno, createdby, 
             createdon, mobile, orgid, engName, centerid, srno, 
-            cust_pincode, cust_bankname, cust_ifsc, isActive, ctype
-          ) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            cust_pincode, cust_bankname, cust_ifsc, isActive, ctype,isdeleted
+          ) VALUES (?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
         `;
         const dealerData = [
           cid,
@@ -322,6 +322,7 @@ exports.createDealer = async (req, res) => {
           bankIFSC,
           1,
           ctype,
+          0,
         ];
 
         connection.query(createDealerQuery, dealerData, (err) => {
@@ -406,7 +407,7 @@ exports.dealerList = async (req, res) => {
       // `;
       const getCustList = `
         SELECT * FROM customer
-        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 0);
+        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 1);
       `;
 
       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
