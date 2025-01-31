@@ -35,7 +35,6 @@ import CattleFeedPurMaster from "./Purchase/CattleFeed/CattleFeedMaster";
 import GroceryPurMaster from "./Purchase/Grocery/GroceryMaster";
 import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
-import Test from "./Sales/Test";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 

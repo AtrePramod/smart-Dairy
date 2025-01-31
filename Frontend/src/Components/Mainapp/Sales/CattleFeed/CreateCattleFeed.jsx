@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "../sales.css";
+import Invoice from "../Invoice";
 
 const CreateCattleFeed = () => {
   // State variables for cart, customer info, date, etc.
@@ -216,22 +217,111 @@ const CreateCattleFeed = () => {
       if (printWindow) {
         printWindow.document.write(
           `
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          #print-section { width: 100%; display: flex; flex-direction: row; justify-content: space-between; gap: 1cm; padding: 1cm; }
-          .invoice { width: 48%; border: 1px solid black; padding: 1cm; box-sizing: border-box; }
-          .invoice-table { width: 100%; border-collapse: collapse; }
-          .invoice-table th, .invoice-table td { border: 1px solid black; padding: 5px; text-align: left; word-wrap: break-word; }
-          body { font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div id="print-section">${printContent}</div>
-      </body>
-    </html>
-    `
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              @page {
+                size: A4 landscape;
+                margin: 5mm;
+              }
+              body {
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                margin: 0;
+                padding: 0;
+              }
+              #print-section {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                height:100%;
+                padding: 10mm;
+                box-sizing: border-box;
+                flex-wrap: wrap;
+              }
+              .invoice { 
+                width: 46%;
+                border: 1px solid black;
+                height:100%;
+                padding: 1mm;
+                box-sizing: border-box;
+               display: flex;
+              flex-direction: column;
+              }
+              .invoice-header {
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: 0;
+              }
+                 .invoice-sub-header {
+                text-align: center;
+                font-size: 14px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                margin-right: 90px;
+
+              }
+              .invoice-info {
+                display: flex;
+                margin:0 10px;
+                justify-content: space-between;
+                margin-bottom: 10px;
+              }
+
+              .invoice-outstanding-container{
+                width: 100%;
+                display: flex; 
+                justify-content: end;
+                margin-bottom:10px;
+              }
+              .outstanding-conatiner{
+                width: 120px;
+                height : 50px;
+                text-align: center;
+                border: 1px solid black;
+              }
+     
+
+              .invoice-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+              }
+              .invoice-table th, .invoice-table td {
+              font-size: 12px;
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+                word-wrap: break-word;
+              }
+              
+            
+              .signature-box {
+                display: flex;
+                justify-content: space-between;
+                margin-top: auto;
+                font-weight: bold;
+              }
+              .signature-box span {
+                width: 45%;
+                text-align: center;
+                border-top: 1px solid black;
+                padding-top: 10px;
+              }
+                .footer{
+                margin-top:10px;
+                display:flex;
+                justify-content:center;
+                }
+            </style>
+          </head>
+          <body>
+            <div id="print-section">${printContent}</div>
+          </body>
+        </html>
+        `
         );
         printWindow.document.close();
         printWindow.focus();
@@ -256,6 +346,16 @@ const CreateCattleFeed = () => {
   const handleFocus = (e) => {
     e.target.select();
   };
+
+  // Filter out items that are already in the cart
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    const itemsNotInCart = itemList.filter(
+      (item) => !cartItem.some((cart) => cart.ItemCode === item.ItemCode)
+    );
+    setFilteredItems(itemsNotInCart);
+  }, [itemList, cartItem]);
 
   return (
     <div className="sale-add  w100">
@@ -330,25 +430,25 @@ const CreateCattleFeed = () => {
         <div className="row">
           <div className="col">
             <label className="info-text px10">Select Items:</label>
-            {itemList.length > 0 && (
-              <select
-                disabled={!cname}
-                id="selectitemcode"
-                value={selectitemcode}
-                className="data"
-                onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
-                onKeyDown={(e) =>
-                  handleKeyPress(e, document.getElementById("qty"))
-                }
-              >
-                <option value="0">Select Item</option>
-                {itemList.map((item, i) => (
+
+            <select
+              disabled={!cname}
+              id="selectitemcode"
+              value={selectitemcode}
+              className="data"
+              onChange={(e) => setSelectitemcode(parseInt(e.target.value))}
+              onKeyDown={(e) =>
+                handleKeyPress(e, document.getElementById("qty"))
+              }
+            >
+              <option value="0">Select Item</option>
+              {filteredItems.length > 0 &&
+                filteredItems.map((item, i) => (
                   <option key={i} value={item.ItemCode}>
                     {item.ItemName}
                   </option>
                 ))}
-              </select>
-            )}
+            </select>
           </div>
           <div className="col">
             <label className="info-text px10">QTY:</label>
@@ -456,63 +556,6 @@ const CreateCattleFeed = () => {
             </table>
           </div>
 
-          <div id="print-section" style={{ display: "none" }}>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>10</td>
-                    <td>50</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>500</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="invoice">
-              <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
-              <table className="invoice-table">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>तारीख</th>
-                    <th>नरे</th>
-                    <th>रेट</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>20/01/2025</td>
-                    <td>15</td>
-                    <td>75</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="3">
-                      <b>कुल रक्कम:</b>
-                    </td>
-                    <td>1125</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           <div className="w100 d-flex j-end  my10">
             <button
               className="w-btn "
@@ -530,6 +573,28 @@ const CreateCattleFeed = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div id="print-section" style={{ display: "none" }}>
+        {/* <!-- First Invoice --> */}
+        <Invoice
+          cartItem={cartItem}
+          handleFindItemName={handleFindItemName}
+          cname={cname}
+          fcode={fcode}
+          rctno={rctno}
+          date={date}
+        />
+
+        {/* <!-- Second Invoice (same as the first) --> */}
+        <Invoice
+          cartItem={cartItem}
+          handleFindItemName={handleFindItemName}
+          cname={cname}
+          fcode={fcode}
+          rctno={rctno}
+          date={date}
+        />
       </div>
     </div>
   );
