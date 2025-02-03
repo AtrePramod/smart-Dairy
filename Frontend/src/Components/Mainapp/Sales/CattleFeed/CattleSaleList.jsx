@@ -76,7 +76,7 @@ const CattleSaleList = () => {
   }, []);
 
   useEffect(() => {
-    SetDate1(getPreviousDate(10));
+    SetDate1(getPreviousDate(0));
     SetDate2(getTodaysDate());
   }, []);
 
