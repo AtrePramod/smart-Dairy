@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import "../sales.css";
 import Invoice from "../Invoice";
 
