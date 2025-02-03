@@ -5,6 +5,7 @@ import axiosInstance from "../../../../App/axiosInstance";
 import { useSelector } from "react-redux";
 import "../sales.css";
 import Invoice from "../Invoice";
+import { toast } from "react-toastify";
 
 const CreateCattleFeed = () => {
   // State variables for cart, customer info, date, etc.
@@ -109,7 +110,7 @@ const CreateCattleFeed = () => {
         BillDate: date + " 00:00:00",
         Qty: qty,
         CustCode: fcode,
-        ItemGroupCode: 1, // update Itemgroupcode
+        ItemGroupCode: 1, // update grpcode
         Rate: rate,
         Amount: qty * rate,
       };
@@ -125,6 +126,8 @@ const CreateCattleFeed = () => {
       setRate(0);
       setAmt(0);
       setSelectitemcode(0);
+    } else {
+      toast.error("Please Enter all fields");
     }
   };
 
@@ -168,14 +171,16 @@ const CreateCattleFeed = () => {
           setAmt(0);
           setRctno(parseInt(rctno) + 1);
           setSelectitemcode(0);
-          alert(res.data.message);
+          toast.success(res.data.message);
           const timestamp = Date.now();
           setBillNo(`9${timestamp}`);
           localStorage.setItem("receiptno", parseInt(rctno) + 1);
         }
       } catch (error) {
-        console.error("Error Submitting items:", error);
+        console.error("Error Submitting items to server");
       }
+    } else {
+      toast.error("Please add items to the cart");
     }
   };
 
@@ -210,6 +215,7 @@ const CreateCattleFeed = () => {
 
   // Function to handle printing the invoice
   const handlePrint = () => {
+    handleSubmit();
     if (cartItem.length > 0) {
       const printWindow = window.open("", "_blank");
       const printContent = document.getElementById("print-section").innerHTML;
@@ -372,7 +378,7 @@ const CreateCattleFeed = () => {
               onChange={(e) => setDate(e.target.value)}
               max={date}
             />
-          </div>{" "}
+          </div>
           <div className="col">
             <label className="info-text px10">Receipt No:</label>
             <input
