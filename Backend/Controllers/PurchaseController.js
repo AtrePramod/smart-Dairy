@@ -453,6 +453,9 @@ exports.getAllPurchases = async (req, res) => {
     }
   }
 
+  // Add sorting by purchaseid in descending order
+  query += ` ORDER BY purchaseid DESC`;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
