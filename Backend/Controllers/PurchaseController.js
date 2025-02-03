@@ -497,21 +497,14 @@ exports.getAllPurchases = async (req, res) => {
 
 // Update purchase item controller
 exports.updatePurchase = async (req, res) => {
-  const { purchaseid, ...updateFields } = req.body;
+  const { purchases } = req.body;
   const { dairy_id, center_id } = req.user; // Get dairy_id and center_id from the logged-in user
 
   // Validate input
-  if (!purchaseid) {
+  if (!purchases || !dairy_id) {
     return res.status(400).json({
       success: false,
-      message: "Purchase ID is required to update a record.",
-    });
-  }
-
-  if (Object.keys(updateFields).length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "At least one field to update is required.",
+      message: " required with valid data.",
     });
   }
 
@@ -525,35 +518,85 @@ exports.updatePurchase = async (req, res) => {
     }
 
     try {
-      // Dynamically construct the update query
-      const updateKeys = Object.keys(updateFields).map((key) => `${key} = ?`);
-      const updateQuery = `UPDATE PurchaseMaster SET ${updateKeys.join(
-        ", "
-      )} WHERE purchaseid = ?`;
-      const values = [...Object.values(updateFields), purchaseid];
+      // Start transaction
+      connection.beginTransaction((err) => {
+        if (err) throw err;
 
-      connection.query(updateQuery, values, (err, result) => {
-        connection.release();
+        const updatePromises = purchases.map((purchase) => {
+          const { purchaseid, rate, salerate, qty, amount, date } = purchase;
 
-        if (err) {
-          console.error("Error updating purchase record: ", err);
-          return res.status(500).json({
-            success: false,
-            message: "Error updating purchase record",
+          // Ensure required fields exist
+          if (!purchaseid) {
+            throw new Error("Purchase are required.");
+          }
+
+          // Prepare fields for update
+          const updateFields = { rate, salerate, qty, amount, date };
+          Object.keys(updateFields).forEach((key) => {
+            if (updateFields[key] === undefined || updateFields[key] === null) {
+              delete updateFields[key];
+            }
           });
-        }
 
-        if (result.affectedRows === 0) {
-          return res.status(404).json({
-            success: false,
-            message: "No purchase record found with the given ID.",
+          if (Object.keys(updateFields).length === 0) {
+            throw new Error(
+              "At least one valid field (rate, salerate, qty, amount, date) is required."
+            );
+          }
+
+          // Construct update query dynamically
+          const updateKeys = Object.keys(updateFields).map(
+            (key) => `${key} = ?`
+          );
+          const updateQuery = `
+            UPDATE PurchaseMaster 
+            SET ${updateKeys.join(", ")}
+            WHERE purchaseid = ? AND dairy_id = ? AND center_id = ?`;
+
+          const values = [
+            ...Object.values(updateFields),
+            purchaseid,
+            dairy_id,
+            center_id,
+          ];
+
+          return new Promise((resolve, reject) => {
+            connection.query(updateQuery, values, (err, result) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(result);
+              }
+            });
           });
-        }
-
-        res.status(200).json({
-          success: true,
-          message: "Purchase record updated successfully",
         });
+
+        // Execute all updates
+        Promise.all(updatePromises)
+          .then((results) => {
+            connection.commit((err) => {
+              if (err) {
+                return connection.rollback(() => {
+                  throw err;
+                });
+              }
+
+              res.status(200).json({
+                success: true,
+                message: "Purchase records updated successfully",
+              });
+            });
+          })
+          .catch((error) => {
+            connection.rollback(() => {
+              console.error("Error updating purchase records: ", error);
+              res.status(500).json({
+                success: false,
+                message: "Error updating purchase records",
+                error: error.message,
+              });
+            });
+          });
       });
     } catch (error) {
       connection.release();
