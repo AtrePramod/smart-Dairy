@@ -428,8 +428,8 @@ exports.getAllPurchases = async (req, res) => {
     queryParams.push(date1, date2);
   } else {
     // Default date range (last 10 days)
-    query += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
-    countQuery += ` AND purchasedate >= DATE_SUB(CURDATE(), INTERVAL 10 DAY) AND purchasedate <= CURDATE()`;
+    query += ` AND DATE(purchasedate) = CURDATE()`;
+    countQuery += ` AND DATE(purchasedate) = CURDATE()`;
   }
 
   // Append filter for fcode (Supplier code)

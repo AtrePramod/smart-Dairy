@@ -90,7 +90,7 @@ const List = () => {
   };
 
   useEffect(() => {
-    SetDate1(getPreviousDate(10));
+    SetDate1(getPreviousDate(0));
     SetDate2(getTodaysDate());
   }, []);
 
@@ -221,7 +221,7 @@ const List = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Grocery List</span>
+        <span className="heading p10">Grocery Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
             <span className="f-info-text w5">SrNo</span>
