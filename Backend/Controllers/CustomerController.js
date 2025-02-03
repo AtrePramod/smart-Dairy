@@ -407,7 +407,7 @@ exports.dealerList = async (req, res) => {
       // `;
       const getCustList = `
         SELECT * FROM customer
-        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 1);
+        WHERE orgid = ? AND centerid = ? AND ctype=2 AND (isdeleted IS NULL OR isdeleted != 1) ORDER BY id DESC;;
       `;
 
       connection.query(getCustList, [dairy_id, center_id], (err, result) => {
