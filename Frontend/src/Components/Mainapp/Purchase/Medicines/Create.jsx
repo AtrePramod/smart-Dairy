@@ -228,6 +228,16 @@ const Create = () => {
   const handleFocus = (e) => {
     e.target.select();
   };
+  // Filter out items that are already in the cart
+  const [filteredItems, setFilteredItems] = useState([]);
+
+  useEffect(() => {
+    const itemsNotInCart = itemList.filter(
+      (item) => !cartItem.some((cart) => cart.itemcode === item.ItemCode)
+    );
+    setFilteredItems(itemsNotInCart);
+  }, [itemList, cartItem]);
+
   return (
     <div className="sale-add  w100">
       <div className="form w100 bg">
@@ -319,7 +329,7 @@ const Create = () => {
             >
               <option value="0">Select Item</option>
               {itemList.length > 0 &&
-                itemList.map((item, i) => (
+                filteredItems.map((item, i) => (
                   <option key={i} value={item.ItemCode}>
                     {item.ItemName}
                   </option>
