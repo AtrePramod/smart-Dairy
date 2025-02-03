@@ -4,6 +4,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import "../../Inventory/InventroyPages/productSale.css";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 const Create = () => {
   // State variables for cart, customer info, date, etc.
   const [cartItem, setCartItem] = useState([]);
@@ -158,10 +159,25 @@ const Create = () => {
 
   // Delete an item from the cart
   const handleDeleteItem = (id) => {
-    if (confirm("Are you sure you want to Delete?")) {
-      const updatedCart = cartItem.filter((item, index) => index !== id);
-      setCartItem(updatedCart);
-    }
+    Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this item?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedCart = cartItem.filter((item, index) => index !== id);
+        setCartItem(updatedCart);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Item deleted successfully.",
+          icon: "success",
+        });
+      }
+    });
   };
 
   // Clear all form fields and the cart
@@ -208,6 +224,11 @@ const Create = () => {
     }
   };
 
+  // Select all the text when input is focused
+  const handleFocus = (e) => {
+    e.target.select();
+  };
+
   return (
     <div className="sale-add  w100">
       <div className="form w100 bg">
@@ -251,6 +272,7 @@ const Create = () => {
               type="number"
               id="fcode"
               name="code"
+              onFocus={handleFocus}
               className={`data ${errors.fcode ? "input-error" : ""}`}
               value={fcode}
               onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
@@ -310,6 +332,7 @@ const Create = () => {
               id="qty"
               disabled={!selectitemcode}
               type="number"
+              onFocus={handleFocus}
               value={qty}
               className={`data ${errors.qty ? "input-error" : ""}`}
               name="qty"
@@ -327,6 +350,7 @@ const Create = () => {
             <input
               id="rate"
               type="number"
+              onFocus={handleFocus}
               name="rate"
               className={`data ${errors.rate ? "input-error" : ""}`}
               value={rate}
@@ -344,6 +368,7 @@ const Create = () => {
               id="sellrate"
               type="number"
               name="rate"
+              onFocus={handleFocus}
               className={`data ${errors.sellrate ? "input-error" : ""}`}
               value={sellrate}
               onChange={(e) => setSellrate(e.target.value)}

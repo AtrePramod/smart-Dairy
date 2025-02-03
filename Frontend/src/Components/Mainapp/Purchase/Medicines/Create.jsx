@@ -4,6 +4,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../App/axiosInstance";
 import "../../Inventory/InventroyPages/productSale.css";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 const Create = () => {
   // State variables for cart, customer info, date, etc.
   const [cartItem, setCartItem] = useState([]);
@@ -158,10 +159,25 @@ const Create = () => {
 
   // Delete an item from the cart
   const handleDeleteItem = (id) => {
-    if (confirm("Are you sure you want to Delete?")) {
-      const updatedCart = cartItem.filter((item, index) => index !== id);
-      setCartItem(updatedCart);
-    }
+    Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this item?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const updatedCart = cartItem.filter((item, index) => index !== id);
+        setCartItem(updatedCart);
+        Swal.fire({
+          title: "Deleted!",
+          text: "Item deleted successfully.",
+          icon: "success",
+        });
+      }
+    });
   };
 
   // Clear all form fields and the cart
@@ -208,6 +224,10 @@ const Create = () => {
     }
   };
 
+  // Select all the text when input is focused
+  const handleFocus = (e) => {
+    e.target.select();
+  };
   return (
     <div className="sale-add  w100">
       <div className="form w100 bg">
@@ -234,6 +254,7 @@ const Create = () => {
               type="number"
               id="rctno"
               name="number"
+              onFocus={handleFocus}
               value={rctno}
               className={`data ${errors.rctno ? "input-error" : ""}`}
               onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
@@ -255,6 +276,7 @@ const Create = () => {
               value={fcode}
               onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
               min="0"
+              onFocus={handleFocus}
               onKeyDown={(e) =>
                 handleKeyPress(e, document.getElementById("cname"))
               }
@@ -310,6 +332,7 @@ const Create = () => {
               id="qty"
               disabled={!selectitemcode}
               type="number"
+              onFocus={handleFocus}
               value={qty}
               className={`data ${errors.qty ? "input-error" : ""}`}
               name="qty"
@@ -328,6 +351,7 @@ const Create = () => {
               id="rate"
               type="number"
               name="rate"
+              onFocus={handleFocus}
               className={`data ${errors.rate ? "input-error" : ""}`}
               value={rate}
               onChange={(e) => setRate(Math.max(0, parseFloat(e.target.value)))}
@@ -346,6 +370,7 @@ const Create = () => {
               name="rate"
               className={`data ${errors.sellrate ? "input-error" : ""}`}
               value={sellrate}
+              onFocus={handleFocus}
               onChange={(e) => setSellrate(e.target.value)}
               disabled={!selectitemcode}
             />
