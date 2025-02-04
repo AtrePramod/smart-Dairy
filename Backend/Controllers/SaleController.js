@@ -20,16 +20,6 @@ exports.createSales = async (req, res) => {
         message: "Each sale must have BillNo and BillDate.",
       });
     }
-
-    // Validate DATETIME format (YYYY-MM-DD HH:mm:ss)
-    const datetimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-    if (!datetimeRegex.test(BillDate)) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid BillDate format. Expected format: YYYY-MM-DD HH:mm:ss",
-      });
-    }
   }
 
   pool.getConnection((err, connection) => {
