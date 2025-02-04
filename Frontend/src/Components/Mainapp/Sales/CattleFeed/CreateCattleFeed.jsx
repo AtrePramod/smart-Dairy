@@ -102,7 +102,6 @@ const CreateCattleFeed = () => {
         (item) => item.ItemCode === selectitemcode
       );
       const newCartItem = {
-        companyid: selectedItem?.companyid,
         ReceiptNo: rctno, // Receipt No
         userid: userid,
         BillNo: billNo,

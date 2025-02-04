@@ -101,8 +101,7 @@ const CreateGrocery = () => {
       const selectedItem = itemList.find(
         (item) => item.ItemCode === selectitemcode
       );
-      const newCartItem = {
-        companyid: selectedItem?.companyid,
+      const newCartItem = { 
         ReceiptNo: rctno, // Receipt No
         userid: userid,
         BillNo: billNo,
