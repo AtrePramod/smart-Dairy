@@ -245,22 +245,22 @@ exports.getSale = async (req, res) => {
   });
 };
 
-//delete sale through its saleid
+// Delete sale through its saleid or billNo
 exports.deleteSale = async (req, res) => {
-  const { saleid } = req.body;
+  const { saleid, billNo } = req.body;
   const dairy_id = req.user.dairy_id;
 
-  // Validate the required field
-  if (!saleid) {
+  // Validate that at least one identifier is provided
+  if (!saleid && !billNo) {
     return res.status(400).json({
       success: false,
-      message: "saleid is required to delete a sale record.",
+      message: "Either saleid or billNo is required to delete a sale record.",
     });
   }
 
   const query = `
     DELETE FROM salesmaster 
-    WHERE saleid = ? 
+    WHERE (saleid = ? OR billNo = ?) 
     AND companyid = ?`;
 
   pool.getConnection((err, connection) => {
@@ -269,27 +269,32 @@ exports.deleteSale = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
-    connection.query(query, [saleid, dairy_id], (err, result) => {
-      connection.release();
+    connection.query(
+      query,
+      [saleid || null, billNo || null, dairy_id],
+      (err, result) => {
+        connection.release();
 
-      if (err) {
-        console.error("Error executing query: ", err);
-        return res
-          .status(500)
-          .json({ message: "Error deleting sale record from the database" });
-      }
+        if (err) {
+          console.error("Error executing query: ", err);
+          return res
+            .status(500)
+            .json({ message: "Error deleting sale record from the database" });
+        }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          message: "Sale record not found or does not belong to your company.",
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            message:
+              "Sale record not found or does not belong to your company.",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Sale record deleted successfully",
         });
       }
-
-      res.status(200).json({
-        success: true,
-        message: "Sale record deleted successfully",
-      });
-    });
+    );
   });
 };
 
