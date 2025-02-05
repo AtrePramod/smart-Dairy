@@ -390,9 +390,7 @@ const GrocerySaleList = () => {
                   }
                 </span>
                 <span className="text w5">
-                  {new Date(sale.BillDate).toLocaleDateString("en-US", {
-                    dateStyle: "short",
-                  })}
+                  {formatDateToDDMMYYYY(sale.BillDate)}
                 </span>
                 <span className="text w5 ">{sale.ReceiptNo}</span>
                 <span className="text w5">{sale.CustCode}</span>
@@ -441,13 +439,7 @@ const GrocerySaleList = () => {
               <div className=" d-flex sb mx15 px15">
                 <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
                 <div className="10">
-                  Date :{" "}
-                  {new Date(viewItems[0]?.BillDate).toLocaleDateString(
-                    "en-US",
-                    {
-                      dateStyle: "short",
-                    }
-                  )}
+                  Date :{formatDateToDDMMYYYY(viewItems[0]?.BillDate)}
                 </div>
               </div>
               <div className=" d-flex sb mx15 px15">
