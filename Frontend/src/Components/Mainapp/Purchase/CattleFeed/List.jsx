@@ -354,9 +354,7 @@ const List = () => {
               >
                 <span className="text w5">{index + 1}</span>
                 <span className="text w5">
-                  {new Date(item.purchasedate).toLocaleDateString("en-US", {
-                    dateStyle: "short",
-                  })}
+                  {formatDateToDDMMYYYY(item.purchasedate)}
                 </span>
                 <span className="text w5">{item.receiptno}</span>
                 <span className="text w10">{item.dealerCode}</span>
@@ -399,17 +397,9 @@ const List = () => {
             <div className=" d-flex sb mx15 px15">
               <h4>Rect. No : {updatelist[0]?.receiptno || ""}</h4>
               <div className="10">
-                <input
-                  type="text"
-                  name="date"
-                  className="w20"
-                  value={new Date(
-                    updatelist[0]?.purchasedate
-                  ).toLocaleDateString("en-US", {
-                    dateStyle: "short",
-                  })}
-                  disabled
-                />
+                <h4>
+                  Date: {formatDateToDDMMYYYY(updatelist[0]?.purchasedate)}
+                </h4>
               </div>
             </div>
             <div className=" d-flex sb mx15 px15">
