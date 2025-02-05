@@ -7,6 +7,9 @@ import axiosInstance from "../../../../App/axiosInstance";
 import * as XLSX from "xlsx";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { IoClose } from "react-icons/io5";
 
 const MedicinesSaleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);

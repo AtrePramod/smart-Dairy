@@ -8,6 +8,8 @@ import axiosInstance from "../../../../App/axiosInstance";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { IoClose } from "react-icons/io5";
 
 const OthersSaleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);
