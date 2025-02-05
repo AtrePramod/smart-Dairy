@@ -101,7 +101,7 @@ const CreateGrocery = () => {
       const selectedItem = itemList.find(
         (item) => item.ItemCode === selectitemcode
       );
-      const newCartItem = { 
+      const newCartItem = {
         ReceiptNo: rctno, // Receipt No
         userid: userid,
         BillNo: billNo,
@@ -365,7 +365,7 @@ const CreateGrocery = () => {
   return (
     <div className="sale-add  w100">
       <div className="form w100 bg">
-        <span className="heading">Grocery Cattle Feed</span>
+        <span className="heading">Grocery Create</span>
         <div className="row">
           <div className="col">
             <label className="info-text px10">Date:</label>

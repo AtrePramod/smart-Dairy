@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 import axiosInstance from "../../../../App/axiosInstance";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const OthersSaleList = () => {
   const { customerlist, loading } = useSelector((state) => state.customer);
@@ -15,13 +16,16 @@ const OthersSaleList = () => {
   const [fcode, setFcode] = useState("");
   const [sales, setSales] = useState([]);
   const [itemList, setItemList] = useState([]);
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
+  const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [filteredSalesList, setFilteredSalesList] = useState(sales);
+  const [viewItems, setViewItems] = useState([]);
+  //download Excel sheet
   const downloadExcel = () => {
     const exportData = sales.map((sale) => ({
       BillDate: formatDateToDDMMYYYY(sale.BillDate),
-      BillNo: sale.BillNo,
+      BillNo: sale.ReceiptNo,
       custCode: sale.CustCode,
       custName: handleFindCustName(sale.CustCode),
       ItemCode: sale.ItemCode,
@@ -45,10 +49,11 @@ const OthersSaleList = () => {
     XLSX.writeFile(workbook, `${date1}_to_${date2}.xlsx`); // Trigger download as .xlsx file
   };
 
+  //getall Item
   useEffect(() => {
     const fetchAllItems = async () => {
       try {
-        const { data } = await axiosInstance.get("/item/all");
+        const { data } = await axiosInstance.get("/item/all?ItemGroupCode=4");
         setItemList(data.itemsData || []);
       } catch (error) {
         console.error("Error fetching items:", error);
@@ -74,25 +79,28 @@ const OthersSaleList = () => {
     fetchSales();
   }, []);
 
+  //set to date of range to  get default data
   useEffect(() => {
-    SetDate1(getPreviousDate(10));
+    SetDate1(getPreviousDate(0));
     SetDate2(getTodaysDate());
   }, []);
-
+  //get today day
   const getTodaysDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   };
+  //get previous date with give to number
   const getPreviousDate = (daysAgo) => {
     const date = new Date();
     date.setDate(date.getDate() - daysAgo);
     return date.toISOString().split("T")[0];
   };
+
+  // get sale to backend on date range
   const handleShowbutton = async () => {
     const getItem = {
       date1,
       date2,
-      ...(fcode && { fcode }), // Include fcode only if it has a value
     };
     // console.log(getItem);
     try {
@@ -107,48 +115,100 @@ const OthersSaleList = () => {
       console.error("Error fetching items:", error);
     }
   };
-  const handleEditClick = (sale) => {
-    setEditSale(sale);
+
+  //its used to edit and update
+  const handleEditClick = (item) => {
+    setEditSale(item);
     setIsModalOpen(true);
   };
-  const handleDelete = async (saleid) => {
-    if (confirm("Are you sure you want to Delete?")) {
-      try {
-        console.log("saleid", saleid);
-        const res = await axiosInstance.post("/sale/delete", { saleid }); // Replace with your actual API URL
-        alert(res?.data?.message);
 
+  //its to delete  invoice based on billno
+  const handleDelete = async (BillNo) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosInstance.post("/sale/delete", {
+          billNo: BillNo,
+        });
+        toast.success(res?.data?.message);
+        setSales((prevSales) =>
+          prevSales.filter((sale) => sale.BillNo !== BillNo)
+        );
+      } catch (error) {
+        // console.error("Error deleting sale item:", error);
+        toast.error("Failed to server delete the Invoice");
+      }
+    }
+  };
+  //its to delete  invoice based on billno
+  const handleDeleteItem = async (saleid) => {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosInstance.post("/sale/delete", {
+          saleid: saleid,
+        });
+        toast.success(res?.data?.message);
         setSales((prevSales) =>
           prevSales.filter((sale) => sale.saleid !== saleid)
         );
+        setViewItems((prevSales) =>
+          prevSales.filter((sale) => sale.saleid !== saleid)
+        );
       } catch (error) {
-        console.error("Error deleting sale item:", error);
+        // console.error("Error deleting sale item:", error);
+        toast.error("Failed to server delete the Invoice");
       }
     }
   };
 
+  //get item name from item code
   const handleFindItemName = (id) => {
     const selectedItem = itemList.find((item) => item.ItemCode === id);
     return selectedItem?.ItemName || "Unknown Item";
   };
+
+  //get cust name from cust code
   const handleFindCustName = (id) => {
     const selectedItem = customerlist.find((item) => item.srno === id);
     return selectedItem?.cname || "Unknown Customer";
   };
 
+  // calculate total amount
   const handleAmountCalculation = () => {
     const qty = parseFloat(editSale?.Qty || 0);
     const rate = parseFloat(editSale?.Rate || 0);
     return qty * rate;
   };
+
+  //get date like DD/MM/YYYY formate
   const formatDateToDDMMYYYY = (dateStr) => {
-    const date = new Date(dateStr); // Parse the ISO string
-    const day = String(date.getDate()).padStart(2, "0"); // Ensures two digits for day
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Ensures two digits for month
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
+  // update invoice and its item
   const handleSaveChanges = async () => {
     const updatedAmount = parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
 
@@ -164,8 +224,17 @@ const OthersSaleList = () => {
     try {
       const res = await axiosInstance.put("/sale/update", updateItem);
       if (res?.data?.success) {
-        alert("Sale updated successfully");
+        toast.success("Sale updated successfully");
+
         setSales((prevSales) => {
+          return prevSales.map((sale) => {
+            if (sale.saleid === editSale.saleid) {
+              return { ...sale, ...editSale, Amount: updatedAmount };
+            }
+            return sale;
+          });
+        });
+        setViewItems((prevSales) => {
           return prevSales.map((sale) => {
             if (sale.saleid === editSale.saleid) {
               return { ...sale, ...editSale, Amount: updatedAmount };
@@ -176,13 +245,53 @@ const OthersSaleList = () => {
         setIsModalOpen(false);
       }
     } catch (error) {
-      console.error("Error updating sale:", error);
+      toast.error("Server Error to update sale");
+      // console.error("Error updating sale:", error);
     }
   };
+
+  // Grouping by billNo
+  const groupedSales = filteredSalesList.reduce((acc, sale) => {
+    const key = sale.BillNo; // Grouping by billNo
+    if (!acc[key]) {
+      acc[key] = { ...sale, TotalAmount: 0 };
+    }
+    acc[key].TotalAmount += sale.Amount;
+    return acc;
+  }, {});
+  const groupedSalesArray = Object.values(groupedSales);
+
+  //for searching Name /code to get the sale list
+  useEffect(() => {
+    if (fcode) {
+      const filteredItems = sales.filter((item) => {
+        const isCodeMatch = item.CustCode.toString().includes(fcode);
+        const isRecptMatch = item.ReceiptNo.toString().includes(fcode);
+
+        const isNameMatch = handleFindCustName(item.CustCode)
+          ?.toLowerCase()
+          .includes(fcode.toLowerCase());
+
+        return isCodeMatch || isRecptMatch || isNameMatch;
+      });
+
+      setFilteredSalesList(filteredItems);
+    } else {
+      setFilteredSalesList(sales);
+    }
+  }, [fcode, sales]);
+
+  const handleView = (billno) => {
+    const filterList = sales.filter((item) => item.BillNo === billno);
+    setViewItems(filterList);
+    // console.log(filterList);
+    setIsInvoiceOpen(true);
+  };
+
   return (
     <div className="customer-list-container-div w100 h1 d-flex-col p10">
       <div
-        className="download-print-pdf-excel-container w100 h10 d-flex j-end "
+        className="download-print-pdf-excel-container w100 h10 d-flex j-end"
         style={{ display: "contents" }}
       >
         <div className="w100 d-flex sa my5 f-wrap">
@@ -212,55 +321,55 @@ const OthersSaleList = () => {
             />
           </div>
           <div className="my10">
-            <label htmlFor="" className="info-text px10">
-              Customer Code
-            </label>
-            <input
-              type="number"
-              className="data"
-              name="code"
-              value={fcode}
-              onChange={(e) => setFcode(e.target.value.replace(/\D/, ""))}
-              min="0"
-            />
+            <button className="w-btn" onClick={handleShowbutton}>
+              Show
+            </button>
           </div>
         </div>
         <div className="w100 d-flex sa my5">
-          <button className="w-btn" onClick={handleShowbutton}>
-            Show
-          </button>
+          <div>
+            <label htmlFor="" className="info-text px10">
+              Customer Code/Name
+            </label>
+            <input
+              type="text"
+              className="data"
+              name="code"
+              onFocus={(e) => e.target.select()}
+              value={fcode}
+              onChange={(e) =>
+                setFcode(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
+              }
+              min="0"
+              title="Enter code or name to search details"
+            />
+          </div>
+
           <button className="w-btn" onClick={downloadExcel}>
             Export Excel
           </button>
         </div>
-        {/* <button className="btn" onClick={downloadExcel}>
-          <span className="f-label-text px10">Download Excel</span>
-          <FaDownload />
-        </button> */}
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Others List</span>
+        <span className="heading p10">Others Report</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex center t-center sb">
-            <span className="f-info-text w5">Edit</span>
-            <span className="f-info-text w5">Bill Date</span>
-            <span className="f-info-text w5">Receipt No</span>
-            <span className="f-info-text w5">Customer Code</span>
-            <span className="f-info-text w15">Customer Name</span>
-            <span className="f-info-text w10">Item Name</span>
-            <span className="f-info-text w5">Qty</span>
-            <span className="f-info-text w5">Rate</span>
+          <div className="data-headings-div sale-data-headings-div h10 d-flex center t-center sb">
+            <span className="f-info-text w5">Sr.No</span>
+            <span className="f-info-text w5">Date</span>
+            <span className="f-info-text w5">Rec. No</span>
+            <span className="f-info-text w5">Cust Code</span>
+            <span className="f-info-text w25">Cust Name</span>
             <span className="f-info-text w5">Amount</span>
             <span className="f-info-text w5">Actions</span>
           </div>
           {/* Show Spinner if loading, otherwise show the feed list */}
           {loading ? (
             <Spinner />
-          ) : sales.length > 0 ? (
-            sales.map((sale, index) => (
+          ) : groupedSalesArray.length > 0 ? (
+            groupedSalesArray.map((sale, index) => (
               <div
                 key={index}
-                className={`data-values-div w100 h10 d-flex center t-center sa ${
+                className={`data-values-div sale-data-values-div w100 h10 d-flex center t-center sa ${
                   index % 2 === 0 ? "bg-light" : "bg-dark"
                 }`}
                 style={{
@@ -268,34 +377,41 @@ const OthersSaleList = () => {
                 }}
               >
                 <span className="text w5">
-                  <FaRegEdit
+                  {
+                    /* <FaRegEdit
                     size={15}
                     className="table-icon"
                     onClick={() => handleEditClick(sale)}
-                  />
+                  /> */
+
+                    index + 1
+                  }
                 </span>
                 <span className="text w5">
-                  {" "}
                   {new Date(sale.BillDate).toLocaleDateString("en-US", {
                     dateStyle: "short",
                   })}
                 </span>
                 <span className="text w5 ">{sale.ReceiptNo}</span>
                 <span className="text w5">{sale.CustCode}</span>
-                <span className="text w15">
+                <span className="text w25">
                   {handleFindCustName(sale.CustCode)}
                 </span>
-                <span className="text w10">
-                  {handleFindItemName(sale.ItemCode)}
-                </span>
-                <span className="text w5">{sale.Qty}</span>
-                <span className="text w5">{sale.Rate}</span>
-                <span className="text w5">{sale.Amount}</span>
-                <span className="text w5">
+
+                <span className="text w5">{sale.TotalAmount}</span>
+                <span className="text w5 d-flex j-center a-center">
+                  <button
+                    className="px5"
+                    onClick={() => handleView(sale?.BillNo)}
+                    title="View the Bill"
+                  >
+                    View
+                  </button>
                   <MdDeleteOutline
-                    onClick={() => handleDelete(sale?.saleid)}
+                    onClick={() => handleDelete(sale?.BillNo)}
                     size={15}
-                    className="table-icon"
+                    className="table-icon "
+                    title="Delete the Bill"
                     style={{ color: "red" }}
                   />
                 </span>
@@ -307,10 +423,106 @@ const OthersSaleList = () => {
             <div>No Items found</div>
           )}
         </div>
+        {/* show invoice */}
+        {isInvoiceOpen && viewItems.length > 0 && (
+          <div className="pramod modal">
+            <div className="modal-content">
+              <div className="d-flex sb">
+                <h2>Sale Bill Details</h2>
+                <IoClose
+                  style={{ cursor: "pointer" }}
+                  size={25}
+                  onClick={() => setIsInvoiceOpen(false)}
+                />
+              </div>
+              <hr />
+              <div className=" d-flex sb mx15 px15">
+                <h4>Rect. No : {viewItems[0]?.ReceiptNo || ""}</h4>
+                <div className="10">
+                  Date :{" "}
+                  {new Date(viewItems[0]?.BillDate).toLocaleDateString(
+                    "en-US",
+                    {
+                      dateStyle: "short",
+                    }
+                  )}
+                </div>
+              </div>
+              <div className=" d-flex sb mx15 px15">
+                <h4>Customer code : {viewItems[0]?.CustCode || ""}</h4>
+                <h4 className="mx15">
+                  {handleFindCustName(viewItems[0]?.CustCode) || ""}
+                </h4>
+              </div>
+              <div className="modal-content w100  ">
+                <div className="sales-table-container w100">
+                  <table className="sales-table w100 ">
+                    <thead className="bg1">
+                      <tr>
+                        <th>SrNo</th>
+                        <th>Item Name</th>
+                        <th>Rate</th>
+                        <th>Qty</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {viewItems.map((item, i) => (
+                        <tr key={i}>
+                          <td>{i + 1}</td>
+                          <td>{handleFindItemName(item.ItemCode)}</td>
+                          <td className="w15"> {item.Rate}</td>
+
+                          <td className="w15">{item.Qty}</td>
+                          <td>{item.Amount}</td>
+                          <td>
+                            <FaRegEdit
+                              size={15}
+                              className="table-icon"
+                              title="Update Item details"
+                              onClick={() => handleEditClick(item)}
+                            />
+                            <MdDeleteOutline
+                              onClick={() => handleDeleteItem(item?.saleid)}
+                              size={15}
+                              title="Delete the Item"
+                              className="table-icon "
+                              style={{ color: "red" }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <b>Total</b>
+                        </td>
+                        <td>
+                          {(viewItems || []).reduce(
+                            (acc, item) => acc + (item.Amount || 0),
+                            0
+                          )}
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              {/* <div className="d-flex my15 j-end">
+                <button className="btn">Update</button>
+              </div> */}
+            </div>
+          </div>
+        )}
+        {/* its used for edit item */}
         {isModalOpen && (
           <div className="modal">
             <div className="modal-content">
-              <h2>Edit Sale</h2>
+              <h2>Update Sale Item</h2>
               <label>
                 Receipt No:
                 <input
