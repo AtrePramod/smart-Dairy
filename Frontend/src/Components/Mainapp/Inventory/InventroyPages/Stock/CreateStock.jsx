@@ -1,24 +1,68 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
 
-const CreateStock = () => {
-  const [formData, setFormData] = useState({
-    ItemName: "",
-    marname: "",
-    ItemGroupCode: "",
-    UnitCode: "",
-    ItemDesc: "",
-    Manufacturer: "",
-  });
+// Function to get the current date
+const getTodaysDate = () => {
+  const today = new Date();
+  return today.toISOString().split("T")[0];
+};
 
+const CreateStock = () => {
+  const [itemList, setItemList] = useState([]);
+  const [date, setDate] = useState(getTodaysDate());
+  const [filteredList, setFilteredList] = useState([]);
+  const [formData, setFormData] = useState({
+    itemcode: "",
+    itemname: "",
+    purchasedate: getTodaysDate(),
+    qty: 0,
+    itemgroupcode: 0,
+    rate: 0,
+    amount: 0,
+    salerate: 0,
+  });
   const [errors, setErrors] = useState({});
 
+  // Fetch all items from API
+  useEffect(() => {
+    const fetchAllItems = async () => {
+      try {
+        const { data } = await axiosInstance.get("/item/all");
+        setItemList(data.itemsData || []);
+      } catch (error) {
+        console.error("Failed to fetch items.", error);
+      }
+    };
+    fetchAllItems();
+  }, []);
+
+  // Set today's date on mount
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      purchasedate: date,
+    }));
+  }, [date]);
+
+  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+
+      if (name === "qty" || name === "rate") {
+        updatedData.amount =
+          updatedData.qty && updatedData.rate
+            ? updatedData.qty * updatedData.rate
+            : 0;
+      }
+
+      return updatedData;
+    });
   };
 
+  // Validate form
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((field) => {
@@ -29,6 +73,7 @@ const CreateStock = () => {
     return newErrors;
   };
 
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
@@ -36,19 +81,11 @@ const CreateStock = () => {
     if (Object.keys(newErrors).length === 0) {
       console.log("Product Data Submitted: ", formData);
       alert("Product created successfully!");
+      // API call to save data
       // try {
-      //   console.log("Product Data Submitted: ", formData);
-      //   const res = await axiosInstance.post("/item/new", formData); // Replace with your actual API URL
+      //   const res = await axiosInstance.post("/item/new", formData);
       //   alert(res?.data?.message);
-      //   setFormData({
-      //     ItemName: "",
-      //     marname: "",
-      //     ItemGroupCode: "",
-      //     UnitCode: "",
-      //     ItemDesc: "",
-      //     Manufacturer: "",
-      //   });
-      //   alert("Product created successfully!");
+      //   handleClear();
       // } catch (error) {
       //   console.error("Error creating product: ", error);
       //   alert("There was an error creating the product.");
@@ -56,11 +93,12 @@ const CreateStock = () => {
     }
   };
 
+  // Handle enter key navigation
   const handleKeyDown = (e, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const formElements = Array.from(document.querySelectorAll(".form-field"));
-      const currentIndex = formElements.findIndex(
+      const formElements = document.querySelectorAll(".form-field");
+      const currentIndex = [...formElements].findIndex(
         (el) => el.name === fieldName
       );
       if (currentIndex !== -1 && currentIndex < formElements.length - 1) {
@@ -69,70 +107,66 @@ const CreateStock = () => {
     }
   };
 
+  // Handle clear
   const handleClear = () => {
     setFormData({
-      ItemName: "",
-      marname: "",
-      ItemGroupCode: "",
-      UnitCode: "",
-      ItemDesc: "",
-      Manufacturer: "",
+      itemcode: "",
+      itemname: "",
+      purchasedate: getTodaysDate(),
+      qty: 0,
+      itemgroupcode: 0,
+      rate: 0,
+      amount: 0,
+      salerate: 0,
     });
     setErrors({});
   };
 
+  // Filter items by item group
+  useEffect(() => {
+    if (formData.itemgroupcode) {
+      const filteredItems = itemList.filter(
+        (item) =>
+          parseInt(item.ItemGroupCode) === parseInt(formData.itemgroupcode)
+      );
+      setFilteredList(filteredItems);
+    } else {
+      setFilteredList(itemList);
+    }
+  }, [formData.itemgroupcode, itemList]);
   return (
     <div className="d-flex py15 dealer">
       <div className="bg p10 w100">
         <span className="heading">Create Starting Stock</span>
         <form onSubmit={handleSubmit}>
-          <div className="row d-flex my10">
+          <div className="row d-flex sa my10 ">
             <div className="col">
               <label className="info-text px10">
-                Item Name: <span className="req">*</span>
+                Date: <span className="req">*</span>
               </label>
               <input
-                type="text"
-                name="ItemName"
-                value={formData.ItemName}
+                type="date"
+                name="purchasedate"
+                value={formData.purchasedate}
+                max={date}
                 className={`data form-field ${
-                  errors.ItemName ? "input-error" : ""
+                  errors.purchasedate ? "input-error" : ""
                 }`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "ItemName")}
-                placeholder="Item Name"
               />
             </div>
-            <div className="col">
-              <label className="info-text px10">
-                Item Marathi Name: <span className="req">*</span>
-              </label>
-              <input
-                type="text"
-                name="marname"
-                value={formData.marname}
-                className={`data form-field ${
-                  errors.marname ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "marname")}
-                placeholder="Item Marathi Name"
-              />
-            </div>
-          </div>
-          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
                 Item Group Name: <span className="req">*</span>
               </label>
               <select
-                name="ItemGroupCode"
-                value={formData.ItemGroupCode}
+                name="itemgroupcode"
+                value={formData.itemgroupcode}
                 className={`data form-field ${
-                  errors.ItemGroupCode ? "input-error" : ""
+                  errors.itemgroupcode ? "input-error" : ""
                 }`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "ItemGroupCode")}
+                onKeyDown={(e) => handleKeyDown(e, "itemgroupcode")}
               >
                 <option value="">Item Group Name</option>
                 {[
@@ -147,63 +181,77 @@ const CreateStock = () => {
                 ))}
               </select>
             </div>
+          </div>
+          <div className="row d-flex sa my10 ">
             <div className="col">
               <label className="info-text px10">
-                Unit Code: <span className="req">*</span>
+                Item Name: <span className="req">*</span>
               </label>
               <select
-                name="UnitCode"
-                value={formData.UnitCode}
+                name="itemcode"
+                value={formData.itemcode}
                 className={`data form-field ${
-                  errors.UnitCode ? "input-error" : ""
+                  errors.itemcode ? "input-error" : ""
                 }`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "UnitCode")}
+                onKeyDown={(e) => handleKeyDown(e, "itemcode")}
+                disabled={!formData.itemgroupcode}
               >
-                <option value="">Select Unit</option>
-                {[
-                  { value: "KG", label: "KG" },
-                  { value: "QTY", label: "QTY" },
-                  { value: "Others", label: "Others" },
-                ].map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
+                <option value="">Select Item Name</option>
+                {filteredList &&
+                  filteredList.map((item) => (
+                    <option key={item.ItemCode} value={item.ItemCode}>
+                      {item.ItemName}
+                    </option>
+                  ))}
               </select>
             </div>
-          </div>
-          <div className="row d-flex my10">
             <div className="col">
               <label className="info-text px10">
-                Item Description: <span className="req">*</span>
+                Qty: <span className="req">*</span>
               </label>
               <input
-                type="text"
-                name="ItemDesc"
-                value={formData.ItemDesc}
+                name="qty"
+                type="number"
+                value={formData.qty}
+                min={1}
+                className={`data form-field ${errors.qty ? "input-error" : ""}`}
+                onChange={handleInputChange}
+                disabled={!formData.itemcode}
+              />
+            </div>
+          </div>
+          <div className="row d-flex sa my10">
+            <div className="col">
+              <label className="info-text px10">
+                Rate: <span className="req">*</span>
+              </label>
+              <input
+                name="rate"
+                type="number"
+                value={formData.rate}
                 className={`data form-field ${
-                  errors.ItemDesc ? "input-error" : ""
+                  errors.rate ? "input-error" : ""
                 }`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "ItemDesc")}
-                placeholder="Item Description"
+                min={1}
+                disabled={!formData.itemcode}
               />
             </div>
             <div className="col">
               <label className="info-text px10">
-                Manufacturer: <span className="req">*</span>
+                Sell Rate: <span className="req">*</span>
               </label>
               <input
-                type="text"
-                name="Manufacturer"
-                value={formData.Manufacturer}
+                name="salerate"
+                type="number"
+                value={formData.salerate}
+                min={1}
                 className={`data form-field ${
-                  errors.Manufacturer ? "input-error" : ""
+                  errors.salerate ? "input-error" : ""
                 }`}
                 onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "Manufacturer")}
-                placeholder="Manufacturer"
+                disabled={!formData.itemcode}
               />
             </div>
           </div>

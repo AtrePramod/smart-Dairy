@@ -7,12 +7,53 @@ import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../App/axiosInstance";
 import "./Stock.css";
 import { MdDeleteOutline } from "react-icons/md";
+import { toast } from "react-toastify";
+import { FaRegEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const StockList = () => {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
 
+  const [editSale, setEditSale] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  //open modal to edit product
+  const handleEditClick = (id) => {
+    setEditSale(id);
+    setIsModalOpen(true);
+  };
+
+  //handle update product
+  const handleSaveChanges = async () => {
+    const updateItem = {
+      ItemCode: editSale.ItemCode,
+      ItemName: editSale.ItemName,
+      ItemDesc: editSale.ItemDesc,
+    };
+
+    try {
+      const res = await axiosInstance.put("/item/update", updateItem);
+      if (res?.data?.success) {
+        toast.success(res?.data?.message);
+        setProductList((prevCust) => {
+          return prevCust.map((item) => {
+            if (item.ItemCode === editSale.ItemCode) {
+              return { ...item, ...editSale };
+            }
+            return item;
+          });
+        });
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      toast.error("error in update product to server");
+      // console.error("Error updating cust:", error);
+    }
+  };
+
+  //handle download excel
   const downloadExcel = () => {
     // Filter products based on the selected ItemGroupCode
     const filteredProducts = filter
@@ -35,10 +76,11 @@ const StockList = () => {
     XLSX.writeFile(wb, "Products_List.xlsx");
   };
 
+  //onchange event for filter
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
-
+  //gettingi all products
   useEffect(() => {
     const fetchProductList = async () => {
       try {
@@ -51,20 +93,31 @@ const StockList = () => {
         setProductList(products);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching product list: ", error);
-        alert("There was an error fetching the product list.");
+        // console.error("Error fetching product list: ", error);
+        toast.error("There was an error fetching the product list.");
         setLoading(false);
       }
     };
     fetchProductList();
   }, [filter]);
 
+  //handle delete
   const handleDelete = async (ItemCode) => {
-    if (confirm("Are you sure you want to Delete?")) {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Product?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       try {
         // console.log("saleid", id);
         const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
 
         productList((prevSales) =>
           prevSales.filter((product) => product.ItemCode !== ItemCode)
@@ -105,9 +158,9 @@ const StockList = () => {
       </div>
 
       <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Stock List</span>
+        <span className="heading p10">Stock Report</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
-          <div className="data-headings-div h10 d-flex forWidth center t-center sb">
+          <div className="data-headings-div h10 d-flex forWidth center t-center sa">
             <span className="f-info-text w5">Sr.No.</span>
             <span className="f-info-text w5">Item Code</span>
             {/* <span className="f-info-text w5">ItemGrpCode</span> */}
@@ -136,6 +189,11 @@ const StockList = () => {
                 <span className="text w20">{product.ItemDesc}</span>
                 {/* <span className="text w5">{product.companyid}</span> */}
                 <span className="text w5">
+                  <FaRegEdit
+                    size={15}
+                    className="table-icon"
+                    onClick={() => handleEditClick(product)}
+                  />
                   <MdDeleteOutline
                     onClick={() => handleDelete(product.ItemCode)}
                     size={15}
@@ -150,6 +208,37 @@ const StockList = () => {
           )}
         </div>
       </div>
+      {isModalOpen && (
+        <div className="pramod modal">
+          <div className="modal-content">
+            <h2>Update Product Details</h2>
+            <label>
+              Item Name:
+              <input
+                type="text"
+                value={editSale?.ItemName}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, ItemName: e.target.value })
+                }
+              />
+            </label>{" "}
+            <label>
+              Item Desc:
+              <input
+                type="text"
+                value={editSale?.ItemDesc}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, ItemDesc: e.target.value })
+                }
+              />
+            </label>
+            <div>
+              <button onClick={handleSaveChanges}>Update</button>
+              <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
