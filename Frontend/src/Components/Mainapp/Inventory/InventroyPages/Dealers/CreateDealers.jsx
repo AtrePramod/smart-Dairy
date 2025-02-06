@@ -41,11 +41,13 @@ const CreateDealers = () => {
     }
   }, [custno]);
 
+  //handling i/pfield onchange
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  //validation
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((field) => {
@@ -56,6 +58,7 @@ const CreateDealers = () => {
     return newErrors;
   };
 
+  //handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
@@ -87,6 +90,7 @@ const CreateDealers = () => {
     }
   };
 
+  //handle enter key press
   const handleKeyDown = (e, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -100,6 +104,7 @@ const CreateDealers = () => {
     }
   };
 
+  //clear form data
   const handleClear = () => {
     setFormData({
       cust_no: custno,

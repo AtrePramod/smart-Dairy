@@ -12,14 +12,16 @@ import Swal from "sweetalert2";
 const DealersList = () => {
   const [dealerList, setDealerList] = useState([]);
 
-  const [editSale, setEditSale] = useState(null); // State to hold the sale being edited
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [editSale, setEditSale] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  //open to edit item
   const handleEditClick = (id) => {
     setEditSale(id);
     setIsModalOpen(true);
   };
 
+  //update item
   const handleSaveChanges = async () => {
     const updateCust = {
       id: editSale.id,
@@ -51,9 +53,10 @@ const DealersList = () => {
     }
   };
 
+  //download excel file
   const downloadExcel = () => {
     if (dealerList.length === 0) {
-      alert("No data available to download.");
+      toast.error("No data available to download.");
       return;
     }
 
@@ -81,6 +84,7 @@ const DealersList = () => {
     XLSX.writeFile(workbook, "Dealers_List.xlsx");
   };
 
+  //fetch Dealer list through API
   useEffect(() => {
     const fetchDealerList = async () => {
       try {
@@ -90,13 +94,14 @@ const DealersList = () => {
         customers.sort((a, b) => new Date(b.createdon) - new Date(a.createdon));
         setDealerList(customers);
       } catch (error) {
-        console.error("Error fetching dealer list: ", error);
-        alert("There was an error fetching the dealer list.");
+        // console.error("Error fetching dealer list: ", error);
+        toast.error("There was an error fetching the dealer list.");
       }
     };
     fetchDealerList();
   }, []);
 
+  //handle delete with api
   const handleDelete = async (cid) => {
     const result = await Swal.fire({
       title: "Confirm Deletion?",
