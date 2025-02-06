@@ -901,36 +901,42 @@ exports.uniqueRchartList = async (req, res) => {
 //..................................................
 exports.deleteCustomer = async (req, res) => {
   const { cid } = req.body;
+  const dairy_id = req.user.dairy_id;
+  const center_id = req.user.center_id;
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
       return res.status(500).json({ message: "Database connection error" });
     }
     try {
-      const isdeleted = 0;
+      const isdeleted = 1;
       const udeletequery = `
         UPDATE customer
         SET
           isdeleted = ?
-        WHERE cid = ?
+        WHERE cid = ? AND orgid = ? AND centerid = ?
       `;
 
-      connection.query(udeletequery, [isdeleted, cid], (error, results) => {
-        connection.release();
+      connection.query(
+        udeletequery,
+        [isdeleted, cid, dairy_id, center_id],
+        (error, results) => {
+          connection.release();
 
-        if (error) {
-          console.error("Error executing query: ", error);
-          return res.status(500).json({ message: "Error deleting customer" });
+          if (error) {
+            console.error("Error executing query: ", error);
+            return res.status(500).json({ message: "Error deleting customer" });
+          }
+
+          if (results.affectedRows === 0) {
+            return res.status(404).json({ message: "Customer not found" });
+          }
+
+          return res
+            .status(200)
+            .json({ message: "Customer deleted successfully" });
         }
-
-        if (results.affectedRows === 0) {
-          return res.status(404).json({ message: "Customer not found" });
-        }
-
-        return res
-          .status(200)
-          .json({ message: "Customer deleted successfully" });
-      });
+      );
     } catch (error) {
       connection.release();
       console.error("Error processing request: ", error);

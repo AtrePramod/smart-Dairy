@@ -6,6 +6,8 @@ import { FaDownload } from "react-icons/fa6";
 import axiosInstance from "../../../../../App/axiosInstance";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const DealersList = () => {
   const [dealerList, setDealerList] = useState([]);
@@ -32,7 +34,7 @@ const DealersList = () => {
     try {
       const res = await axiosInstance.patch("/update/dealer", updateCust);
       if (res?.data?.success) {
-        alert("Cust updated successfully");
+        toast.success("Dealers updated successfully");
         setDealerList((prevCust) => {
           return prevCust.map((item) => {
             if (item.id === editSale.id) {
@@ -44,7 +46,8 @@ const DealersList = () => {
         setIsModalOpen(false);
       }
     } catch (error) {
-      console.error("Error updating cust:", error);
+      toast.error("Dealers updated Error to server");
+      // console.error("Error updating cust:", error);
     }
   };
 
@@ -95,17 +98,38 @@ const DealersList = () => {
   }, []);
 
   const handleDelete = async (cid) => {
-    if (confirm("Are you sure you want to Delete?")) {
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Dealer?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
       try {
         // console.log("saleid", id);
         const res = await axiosInstance.post("/delete/customer", { cid }); // Replace with your actual API URL
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
 
         setDealerList((prevSales) =>
           prevSales.filter((sale) => sale.cid !== cid)
         );
       } catch (error) {
-        console.error("Error deleting sale item:", error);
+        // console.error("Error deleting dealer:", error);
+        toast.error("Error deleting  dealer to server");
+      }
+    }
+  };
+
+  // Handle Enter key press to move to the next field
+  const handleKeyPress = (e, nextField) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (nextField) {
+        nextField.focus();
       }
     }
   };
@@ -181,12 +205,16 @@ const DealersList = () => {
           <div className="modal-content">
             <h2>Update Dealer Details</h2>
             <label>
-              Customer Name:
+              Dealer Name:
               <input
                 type="text"
                 value={editSale?.cname}
                 onChange={(e) =>
                   setEditSale({ ...editSale, cname: e.target.value })
+                }
+                onFocus={(e) => e.target.select()}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("phono"))
                 }
               />
             </label>{" "}
@@ -194,9 +222,14 @@ const DealersList = () => {
               Phone:
               <input
                 type="number"
+                id="phono"
                 value={editSale?.Phone}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
                   setEditSale({ ...editSale, Phone: e.target.value })
+                }
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("city"))
                 }
               />
             </label>
@@ -205,9 +238,14 @@ const DealersList = () => {
                 City:
                 <input
                   type="text"
+                  id="city"
                   value={editSale?.City}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) =>
                     setEditSale({ ...editSale, City: e.target.value })
+                  }
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("dist"))
                   }
                 />
               </label>
@@ -215,7 +253,12 @@ const DealersList = () => {
                 District:
                 <input
                   type="text"
+                  id="dist"
+                  onFocus={(e) => e.target.select()}
                   value={editSale?.dist}
+                  onKeyDown={(e) =>
+                    handleKeyPress(e, document.getElementById("ifsc"))
+                  }
                   onChange={(e) =>
                     setEditSale({ ...editSale, dist: e.target.value })
                   }
@@ -226,7 +269,12 @@ const DealersList = () => {
               Bank IFSC:
               <input
                 type="text"
+                id="ifsc"
                 value={editSale?.cust_ifsc}
+                onFocus={(e) => e.target.select()}
+                onKeyDown={(e) =>
+                  handleKeyPress(e, document.getElementById("acno"))
+                }
                 onChange={(e) =>
                   setEditSale({ ...editSale, cust_ifsc: e.target.value })
                 }
@@ -235,8 +283,10 @@ const DealersList = () => {
             <label>
               A/C No:
               <input
+                id="acno"
                 type="number"
                 value={editSale?.cust_accno}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
                   setEditSale({ ...editSale, cust_accno: e.target.value })
                 }
