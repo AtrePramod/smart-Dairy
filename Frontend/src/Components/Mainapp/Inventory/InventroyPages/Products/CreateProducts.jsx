@@ -1,5 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
+import { toast } from "react-toastify";
 
 const CreateProducts = () => {
   const [formData, setFormData] = useState({
@@ -36,7 +38,7 @@ const CreateProducts = () => {
       try {
         console.log("Product Data Submitted: ", formData);
         const res = await axiosInstance.post("/item/new", formData); // Replace with your actual API URL
-        alert(res?.data?.message);
+        toast.success(res?.data?.message);
 
         setFormData({
           ItemName: "",
@@ -46,10 +48,10 @@ const CreateProducts = () => {
           ItemDesc: "",
           Manufacturer: "",
         });
-        alert("Product created successfully!");
+        toast.success("Product created successfully!");
       } catch (error) {
-        console.error("Error creating product: ", error);
-        alert("There was an error creating the product.");
+        // console.error("Error creating product: ", error);
+        toast.error("There was an error server creating the product.");
       }
     }
   };
@@ -93,6 +95,7 @@ const CreateProducts = () => {
                 type="text"
                 name="ItemName"
                 value={formData.ItemName}
+                onFocus={(e) => e.target.select()}
                 className={`data form-field ${
                   errors.ItemName ? "input-error" : ""
                 }`}
@@ -108,6 +111,7 @@ const CreateProducts = () => {
               <input
                 type="text"
                 name="marname"
+                onFocus={(e) => e.target.select()}
                 value={formData.marname}
                 className={`data form-field ${
                   errors.marname ? "input-error" : ""
@@ -180,6 +184,7 @@ const CreateProducts = () => {
                 type="text"
                 name="ItemDesc"
                 value={formData.ItemDesc}
+                onFocus={(e) => e.target.select()}
                 className={`data form-field ${
                   errors.ItemDesc ? "input-error" : ""
                 }`}
@@ -196,6 +201,7 @@ const CreateProducts = () => {
                 type="text"
                 name="Manufacturer"
                 value={formData.Manufacturer}
+                onFocus={(e) => e.target.select()}
                 className={`data form-field ${
                   errors.Manufacturer ? "input-error" : ""
                 }`}
