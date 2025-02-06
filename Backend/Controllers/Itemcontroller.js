@@ -52,7 +52,7 @@ exports.getAllItems = async (req, res) => {
   });
 };
 
-//
+//get all item in itemgroupmaster
 exports.getAllGrpItems = async (req, res) => {
   const { ...dynamicFields } = req.query; // Capture dynamic fields from query parameters
 
@@ -103,6 +103,7 @@ exports.getAllGrpItems = async (req, res) => {
   });
 };
 
+//get item by its id
 exports.getItemById = async (req, res) => {
   const { id } = req.params; // Assume the item ID is passed as a URL parameter
 
@@ -150,6 +151,76 @@ exports.getItemById = async (req, res) => {
   });
 };
 
+//add new product in itemmaster
+// exports.createItem = async (req, res) => {
+//   // Extract companyid (from dairy_id), centerid, and user_role from req.user
+//   const { dairy_id: companyid } = req.user;
+//   const { ItemName, ItemGroupCode, ...otherFields } = req.body;
+
+//   // Validate required fields dynamically
+//   if (!ItemName || !ItemGroupCode || !companyid) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Missing required fields: ItemName, ItemGroupCode, or companyid",
+//     });
+//   }
+
+//   // Establish database connection
+//   pool.getConnection((err, connection) => {
+//     if (err) {
+//       console.error("Error getting MySQL connection: ", err);
+//       return res.status(500).json({ message: "Database connection error" });
+//     }
+
+//     connection.query(
+//       "SELECT MAX(ItemCode) AS totalRows FROM itemmaster",
+//       (err, countResult) => {
+//         if (err) {
+//           connection.release();
+//           console.error("Error fetching row count: ", err);
+//           return res
+//             .status(500)
+//             .json({ success: false, message: "Error fetching row count" });
+//         }
+
+//         const newItemId = (countResult[0]?.totalRows || 0) + 1; // Generate new ItemCode
+
+//         // Build the INSERT query dynamically
+//         let insertQuery =
+//           "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid";
+//         const insertValues = [newItemId, ItemName, ItemGroupCode, companyid];
+
+//         for (const [key, value] of Object.entries(otherFields)) {
+//           insertQuery += `, ${key}`;
+//           insertValues.push(value);
+//         }
+
+//         insertQuery += ") VALUES (?";
+//         insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
+
+//         // Execute the INSERT query
+//         connection.query(insertQuery, insertValues, (err, result) => {
+//           connection.release();
+
+//           if (err) {
+//             console.error("Error inserting item record: ", err);
+//             return res
+//               .status(500)
+//               .json({ success: false, message: "Error creating item record" });
+//           }
+
+//           return res.status(201).json({
+//             success: true,
+//             message: "Item record created successfully",
+//             itemid: newItemId,
+//           });
+//         });
+//       }
+//     );
+//   });
+// };
+
+///add new product if also no in itemgroupmaster
 exports.createItem = async (req, res) => {
   // Extract companyid (from dairy_id), centerid, and user_role from req.user
   const { dairy_id: companyid } = req.user;
@@ -170,49 +241,98 @@ exports.createItem = async (req, res) => {
       return res.status(500).json({ message: "Database connection error" });
     }
 
+    // Check if ItemGroupCode exists in itemgroupmaster
     connection.query(
-      "SELECT MAX(ItemCode) AS totalRows FROM itemmaster",
-      (err, countResult) => {
+      "SELECT ItemGroupCode FROM itemgroupmaster WHERE ItemGroupCode = ? AND companyid = ?",
+      [ItemGroupCode, companyid],
+      (err, groupResult) => {
         if (err) {
           connection.release();
-          console.error("Error fetching row count: ", err);
+          console.error("Error checking ItemGroupCode: ", err);
           return res
             .status(500)
-            .json({ success: false, message: "Error fetching row count" });
+            .json({ success: false, message: "Error checking ItemGroupCode" });
         }
 
-        const newItemId = (countResult[0]?.totalRows || 0) + 1; // Generate new ItemCode
+        const insertItemMaster = () => {
+          // Fetch max ItemCode from itemmaster
+          connection.query(
+            "SELECT MAX(ItemCode) AS totalRows FROM itemmaster WHERE companyid = ?",
+            [companyid],
+            (err, countResult) => {
+              if (err) {
+                connection.release();
+                console.error("Error fetching row count: ", err);
+                return res.status(500).json({
+                  success: false,
+                  message: "Error fetching row count",
+                });
+              }
 
-        // Build the INSERT query dynamically
-        let insertQuery =
-          "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid";
-        const insertValues = [newItemId, ItemName, ItemGroupCode, companyid];
+              const newItemId = (countResult[0]?.totalRows || 0) + 1; // Generate new ItemCode
 
-        for (const [key, value] of Object.entries(otherFields)) {
-          insertQuery += `, ${key}`;
-          insertValues.push(value);
+              // Build the INSERT query dynamically
+              let insertQuery =
+                "INSERT INTO itemmaster (ItemCode, ItemName, ItemGroupCode, companyid";
+              const insertValues = [
+                newItemId,
+                ItemName,
+                ItemGroupCode,
+                companyid,
+              ];
+
+              for (const [key, value] of Object.entries(otherFields)) {
+                insertQuery += `, ${key}`;
+                insertValues.push(value);
+              }
+
+              insertQuery += ") VALUES (?";
+              insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
+
+              // Execute the INSERT query
+              connection.query(insertQuery, insertValues, (err, result) => {
+                connection.release();
+
+                if (err) {
+                  console.error("Error inserting item record: ", err);
+                  return res.status(500).json({
+                    success: false,
+                    message: "Error creating item record",
+                  });
+                }
+
+                return res.status(201).json({
+                  success: true,
+                  message: "Item record created successfully",
+                  itemid: newItemId,
+                });
+              });
+            }
+          );
+        };
+
+        if (groupResult.length === 0) {
+          // ItemGroupCode does not exist, insert into itemg    roupmaster
+          connection.query(
+            "INSERT INTO itemgroupmaster (ItemGroupCode,ItemGroupName, kharediKharchNo, vikriUtpannaNo, kharediDeneNo, VikriYeneNo, companyid, MarItemGroupName, HinItemGroupName) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)",
+            [ItemGroupCode, "N/A", 0, 0, 0, 0, companyid, "N/A", "N/A"],
+            (err, insertResult) => {
+              if (err) {
+                connection.release();
+                console.error("Error inserting into itemgroupmaster: ", err);
+                return res.status(500).json({
+                  success: false,
+                  message: "Error inserting into itemgroupmaster",
+                });
+              }
+              // Proceed to insert into itemmaster
+              insertItemMaster();
+            }
+          );
+        } else {
+          // ItemGroupCode exists, proceed to insert into itemmaster
+          insertItemMaster();
         }
-
-        insertQuery += ") VALUES (?";
-        insertQuery += ", ?".repeat(insertValues.length - 1) + ")";
-
-        // Execute the INSERT query
-        connection.query(insertQuery, insertValues, (err, result) => {
-          connection.release();
-
-          if (err) {
-            console.error("Error inserting item record: ", err);
-            return res
-              .status(500)
-              .json({ success: false, message: "Error creating item record" });
-          }
-
-          return res.status(201).json({
-            success: true,
-            message: "Item record created successfully",
-            itemid: newItemId,
-          });
-        });
       }
     );
   });
