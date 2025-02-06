@@ -14,6 +14,7 @@ const {
   dealerList,
   deleteCustomer,
   updateDealer,
+  getMaxDealNo,
 } = require("../Controllers/CustomerController");
 
 const router = express.Router();
@@ -23,6 +24,7 @@ const router = express.Router();
 router.route("/customer/maxcustno").post(verifyToken, getMaxCustNo);
 router.route("/create/customer").post(verifyToken, createCustomer);
 
+router.route("/dealer/maxdealno").post(verifyToken, getMaxDealNo);
 router.route("/create/dealer").post(verifyToken, createDealer);
 router.route("/dealer").post(verifyToken, dealerList);
 router.route("/delete/customer").post(verifyToken, deleteCustomer);

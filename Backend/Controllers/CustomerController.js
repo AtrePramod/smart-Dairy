@@ -21,9 +21,9 @@ exports.getMaxCustNo = async (req, res) => {
 
     try {
       const query =
-        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND centerid = ?";
+        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND centerid = ? AND ctype=?";
 
-      connection.query(query, [dairy_id, centerid], (error, results) => {
+      connection.query(query, [dairy_id, centerid, 1], (error, results) => {
         // Release connection after query execution
         connection.release();
 
@@ -250,6 +250,44 @@ exports.createCustomer = async (req, res) => {
 };
 
 // this code added by Pramod... start
+
+exports.getMaxDealNo = async (req, res) => {
+  const dairy_id = req.user.dairy_id;
+  const centerid = req.user.center_id;
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const query =
+        "SELECT MAX(srno) AS maxCustNo FROM customer WHERE orgid = ? AND centerid = ? AND ctype=?";
+
+      connection.query(query, [dairy_id, centerid, 2], (error, results) => {
+        // Release connection after query execution
+        connection.release();
+
+        if (error) {
+          console.error("Error executing query: ", error);
+          return res.status(500).json({ message: "Error executing query" });
+        }
+
+        // Fetching maxCustNo from results
+        const maxCustNo = results[0]?.maxCustNo || 0; // Use maxCustNo instead of maxCid
+        const cust_no = maxCustNo + 1;
+
+        // Return the new customer number
+        return res.status(200).json({ cust_no });
+      });
+    } catch (error) {
+      connection.release();
+      console.error("Error processing request: ", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+};
 
 //create a new dealer controller
 exports.createDealer = async (req, res) => {
