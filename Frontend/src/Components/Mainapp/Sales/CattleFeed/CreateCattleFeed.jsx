@@ -392,6 +392,8 @@ const CreateCattleFeed = () => {
     const invoiceInfo = doc.getTextWidth("Sale-Info");
     doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
 
+    //
+
     // Add Bill No and Date (aligned) with border
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
@@ -400,7 +402,7 @@ const CreateCattleFeed = () => {
     doc.text(billNoText, margin + 5, margin + 40);
     doc.text(
       dateText,
-      pageWidth - doc.getTextWidth(dateText) - 10,
+      pageWidth - doc.getTextWidth(dateText) - 15,
       margin + 40
     );
 
@@ -410,7 +412,7 @@ const CreateCattleFeed = () => {
     doc.text(CustCode, margin + 5, margin + 50);
     doc.text(
       CustName,
-      pageWidth - doc.getTextWidth(CustName) - 10,
+      pageWidth - doc.getTextWidth(CustName) - 15,
       margin + 50
     );
 
@@ -450,7 +452,7 @@ const CreateCattleFeed = () => {
     doc.text(totalAmountTextStr, margin + 5, doc.lastAutoTable.finalY + 10);
     doc.text(
       totalAmountLabel,
-      pageWidth - totalAmountLabelWidth - 10,
+      pageWidth - totalAmountLabelWidth - 15,
       doc.lastAutoTable.finalY + 10
     );
 
@@ -462,9 +464,46 @@ const CreateCattleFeed = () => {
     );
     doc.text(
       "Signature of the consignor",
-      pageWidth - doc.getTextWidth("Signature of the consignor") - 10,
+      pageWidth - doc.getTextWidth("Signature of the consignor") - 15,
       doc.lastAutoTable.finalY + 40
     );
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    const Info = doc.getTextWidth("Goods received as per the above details.");
+    doc.text(
+      "Goods received as per the above details.",
+      (pageWidth - Info) / 2,
+      doc.lastAutoTable.finalY + 50
+    );
+
+    //table outstanding
+    // Define columns and rows
+    const columns1 = ["Current Outstanding"];
+    const rows1 = [[`${0}`]];
+    const columnWidths = [40];
+    doc.autoTable({
+      head: [columns1],
+      body: rows1,
+      startY: margin + 5,
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] }, // Setting width for the first column (Current Outstanding)
+      },
+      styles: {
+        cellPadding: 2,
+        fontSize: 10,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 10,
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+    });
 
     // Save the PDF
     doc.save("Invoice.pdf");
@@ -694,21 +733,21 @@ const CreateCattleFeed = () => {
           </div>
 
           <div className="w100 d-flex j-end  my10">
+            <button className="w-btn mx10 " onClick={handelClear}>
+              Clear
+            </button>{" "}
+            <button className="w-btn " onClick={exportToPDF}>
+              Pdf
+            </button>
+            <button className="w-btn mx15" onClick={handlePrint}>
+              Print
+            </button>
             <button
               className="w-btn "
               onClick={handleSubmit}
               disabled={cartItem.length == 0}
             >
               Save
-            </button>
-            <button className="w-btn mx15" onClick={handlePrint}>
-              Print
-            </button>
-            <button className="w-btn " onClick={handelClear}>
-              Clear
-            </button>{" "}
-            <button className="w-btn " onClick={exportToPDF}>
-              Pdf
             </button>
           </div>
         </div>
