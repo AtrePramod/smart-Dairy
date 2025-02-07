@@ -6,6 +6,9 @@ import { useSelector } from "react-redux";
 import "../sales.css";
 import Invoice from "../Invoice";
 import { toast } from "react-toastify";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import { toWords } from "number-to-words";
 
 const CreateCattleFeed = () => {
   // State variables for cart, customer info, date, etc.
@@ -23,6 +26,8 @@ const CreateCattleFeed = () => {
   const [userid, setUserid] = useState("");
   const [billNo, setBillNo] = useState("9112");
   const [purchaseData, setPurchaseData] = useState([]);
+  const dairyInfo = useSelector((state) => state.dairy.dairyData.SocietyName);
+
   // Fetch all items for the cattle feed sale
   useEffect(() => {
     const fetchAllItems = async () => {
@@ -337,6 +342,133 @@ const CreateCattleFeed = () => {
     }
   };
 
+  // Function to handle download pdf the invoice
+  const exportToPDF = () => {
+    if (cartItem.length === 0) {
+      alert("No data available to export.");
+      return;
+    }
+
+    const convertToWords = (num) => {
+      const [integerPart, decimalPart] = num.toString().split(".");
+      const integerWords = toWords(integerPart);
+      const decimalWords = decimalPart ? " point " + toWords(decimalPart) : "";
+      return `Rupees ${integerWords}${decimalWords} only`;
+    };
+    const doc = new jsPDF();
+
+    // Define columns and rows
+    const columns = ["Sr No", "Items", "Qty", "Rate", "Amount"];
+    const rows = cartItem.map((item, index) => [
+      index + 1,
+      handleFindItemName(item.ItemCode),
+      item.Qty,
+      item.Rate,
+      item.Amount,
+    ]);
+
+    const totalAmount = cartItem.reduce((acc, item) => acc + item.Amount, 0);
+
+    // Page width for centering text
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Define the margin and the height of the box
+    const margin = 10;
+    const boxHeight = pageHeight - 20; // Adjust as needed
+
+    // Add border for the entire content
+    doc.rect(margin, margin, pageWidth - 2 * margin, boxHeight);
+
+    // Add dairy name with border inside the box
+    const dairyName = dairyInfo;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    const dairyTextWidth = doc.getTextWidth(dairyName);
+    doc.text(dairyName, (pageWidth - dairyTextWidth) / 2, margin + 15);
+
+    // Add "Sale-Info" heading with border
+    doc.setFontSize(14);
+    const invoiceInfo = doc.getTextWidth("Sale-Info");
+    doc.text("Sale-Info", (pageWidth - invoiceInfo) / 2, margin + 25);
+
+    // Add Bill No and Date (aligned) with border
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    const billNoText = `Bill No.: ${rctno || ""}`;
+    const dateText = `Date: ${date || ""}`;
+    doc.text(billNoText, margin + 5, margin + 40);
+    doc.text(
+      dateText,
+      pageWidth - doc.getTextWidth(dateText) - 10,
+      margin + 40
+    );
+
+    // Add Customer Code and Customer Name (aligned) with border
+    const CustCode = `Cust No.: ${fcode || ""}`;
+    const CustName = `Cust. Name: ${cname || ""}`;
+    doc.text(CustCode, margin + 5, margin + 50);
+    doc.text(
+      CustName,
+      pageWidth - doc.getTextWidth(CustName) - 10,
+      margin + 50
+    );
+
+    // Add table for items with borders and centered text
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: margin + 60,
+      margin: { top: 10 },
+      styles: {
+        cellPadding: 2,
+        fontSize: 11,
+        halign: "center", // Horizontal alignment for cells (centered)
+        valign: "middle", // Vertical alignment for cells (centered)
+        lineWidth: 0.08, // Line width for the borders
+        lineColor: [0, 0, 0], // Black border color
+      },
+      headStyles: {
+        fontSize: 12,
+        fontStyle: "bold",
+        fillColor: [225, 225, 225], // Light gray background for the header
+        textColor: [0, 0, 0], // Black text color for header
+      },
+      tableLineColor: [0, 0, 0], // Table border color (black)
+      tableLineWidth: 0.1, // Border width
+    });
+
+    // Add total amount with border
+    doc.setFontSize(12);
+    const totalAmountTextStr = `${convertToWords(totalAmount)}`;
+    const totalAmountLabel = `Total Amount: ${totalAmount}`;
+
+    const totalAmountTextWidth = doc.getTextWidth(totalAmountTextStr);
+    const totalAmountLabelWidth = doc.getTextWidth(totalAmountLabel);
+
+    // Add borders for total amount text
+    doc.text(totalAmountTextStr, margin + 5, doc.lastAutoTable.finalY + 10);
+    doc.text(
+      totalAmountLabel,
+      pageWidth - totalAmountLabelWidth - 10,
+      doc.lastAutoTable.finalY + 10
+    );
+
+    // Footer (Signatures) with borders
+    doc.text(
+      "Signature of the consignee",
+      margin + 5,
+      doc.lastAutoTable.finalY + 40
+    );
+    doc.text(
+      "Signature of the consignor",
+      pageWidth - doc.getTextWidth("Signature of the consignor") - 10,
+      doc.lastAutoTable.finalY + 40
+    );
+
+    // Save the PDF
+    doc.save("Invoice.pdf");
+  };
   // Handle Enter key press to move to the next field
   const handleKeyPress = (e, nextField) => {
     if (e.key === "Enter") {
@@ -569,12 +701,14 @@ const CreateCattleFeed = () => {
             >
               Save
             </button>
-
             <button className="w-btn mx15" onClick={handlePrint}>
               Print
             </button>
             <button className="w-btn " onClick={handelClear}>
               Clear
+            </button>{" "}
+            <button className="w-btn " onClick={exportToPDF}>
+              Pdf
             </button>
           </div>
         </div>
@@ -586,6 +720,7 @@ const CreateCattleFeed = () => {
           cartItem={cartItem}
           handleFindItemName={handleFindItemName}
           cname={cname}
+          dairyInfo={dairyInfo}
           fcode={fcode}
           rctno={rctno}
           date={date}
@@ -598,6 +733,7 @@ const CreateCattleFeed = () => {
           cname={cname}
           fcode={fcode}
           rctno={rctno}
+          dairyInfo={dairyInfo}
           date={date}
         />
       </div>

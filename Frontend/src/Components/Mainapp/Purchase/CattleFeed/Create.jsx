@@ -265,6 +265,7 @@ const Create = () => {
               id="rctno"
               name="number"
               value={rctno}
+              onFocus={handleFocus}
               className={`data ${errors.rctno ? "input-error" : ""}`}
               onChange={(e) => setRctno(e.target.value.replace(/\D/, ""))}
               min="0"
@@ -398,13 +399,9 @@ const Create = () => {
             />
           </div>
         </div>
-        <div className=" d-flex sa my10">
+        <div className=" d-flex  j-end my10">
           <button className="w-btn" onClick={handleAddToCart}>
             Add to Cart
-          </button>
-
-          <button className="w-btn" onClick={handelClear}>
-            Clear
           </button>
         </div>
       </div>
@@ -461,7 +458,10 @@ const Create = () => {
             </table>
           </div>
 
-          <div className="w100 d-flex  my10">
+          <div className="w100 d-flex j-end my10 ">
+            <button className="w-btn mx10" onClick={handelClear}>
+              Clear
+            </button>
             <button className="w-btn" onClick={handleSubmit}>
               save
             </button>

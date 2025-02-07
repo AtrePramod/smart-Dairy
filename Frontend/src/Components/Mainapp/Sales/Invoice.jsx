@@ -1,14 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 import React from "react";
 import { toWords } from "number-to-words";
-const Invoice = ({
-  cartItem,
-  handleFindItemName,
-  cname,
-  fcode,
-  rctno,
-  date,
-}) => {
+
+// eslint-disable-next-line react/prop-types
+const Invoice = ({  cartItem,  handleFindItemName,  cname,  fcode,  rctno,  date,  dairyInfo,}) => {
+  // eslint-disable-next-line react/prop-types
   const totalAmount = cartItem.reduce((acc, item) => acc + item.Amount, 0);
   const convertToWords = (num) => {
     const [integerPart, decimalPart] = num.toString().split(".");
@@ -18,7 +14,7 @@ const Invoice = ({
   };
   return (
     <div className="invoice">
-      <h2 className="invoice-header">हरि ओम दूध संकलन केंद्र</h2>
+      <h2 className="invoice-header">{dairyInfo}</h2>
       <div className="invoice-outstanding-container">
         <h3 className="invoice-sub-header">Sale-Info</h3>
         <div className="outstanding-conatiner">

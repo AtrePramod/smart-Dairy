@@ -119,7 +119,7 @@ const ProductsList = () => {
         const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
         toast.success(res?.data?.message);
 
-        productList((prevSales) =>
+        setProductList((prevSales) =>
           prevSales.filter((product) => product.ItemCode !== ItemCode)
         );
       } catch (error) {
