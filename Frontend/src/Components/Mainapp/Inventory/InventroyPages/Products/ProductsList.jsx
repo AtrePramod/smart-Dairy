@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 const ProductsList = () => {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("1");
 
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -132,24 +132,28 @@ const ProductsList = () => {
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
         <div className="w100 d-flex sa my5">
-          <select
-            name="ItemGroupCode"
-            className="data form-field"
-            onChange={handleFilterChange}
-            value={filter}
-          >
-            <option value="">Select Group Name</option>
-            {[
-              { value: 1, label: "Cattle Feed" },
-              { value: 2, label: "Medicines" },
-              { value: 3, label: "Grocery" },
-              { value: 4, label: "Other" },
-            ].map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <label htmlFor="seletgrop" className="mx5">
+              Select Item Group:
+            </label>
+            <select
+              name="ItemGroupCode"
+              className="data form-field"
+              onChange={handleFilterChange}
+              value={filter}
+            >
+              <option value={1}>Cattle Feed</option>
+              {[
+                { value: 2, label: "Medicines" },
+                { value: 3, label: "Grocery" },
+                { value: 4, label: "Other" },
+              ].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="btn" onClick={downloadExcel}>
             <span className="f-label-text px10">Download</span>
             <FaDownload />
