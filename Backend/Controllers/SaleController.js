@@ -146,6 +146,9 @@ exports.getPaginatedSales = async (req, res) => {
     }
   }
 
+  // Add sorting by saleid in descending order
+  query += ` ORDER BY saleid DESC`;
+
   pool.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting MySQL connection: ", err);
