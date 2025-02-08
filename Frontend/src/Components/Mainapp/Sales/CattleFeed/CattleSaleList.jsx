@@ -213,43 +213,53 @@ const CattleSaleList = () => {
 
   // update invoice and its item
   const handleSaveChanges = async () => {
-    const updatedAmount = parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
+    const result = await Swal.fire({
+      title: "Confirm Update?",
+      text: "Are you sure you want to Update this?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
 
-    const updateItem = {
-      saleid: editSale.saleid,
-      ReceiptNo: editSale.ReceiptNo,
-      Rate: editSale.Rate,
-      Qty: editSale.Qty,
-      Amount: updatedAmount,
-    };
-    // console.log(updateItem);
-    // console.log("Updatiing sales");
-    try {
-      const res = await axiosInstance.put("/sale/update", updateItem);
-      if (res?.data?.success) {
-        toast.success("Sale updated successfully");
+    if (result.isConfirmed) {
+      const updatedAmount =
+        parseFloat(editSale.Qty) * parseFloat(editSale.Rate);
 
-        setSales((prevSales) => {
-          return prevSales.map((sale) => {
-            if (sale.saleid === editSale.saleid) {
-              return { ...sale, ...editSale, Amount: updatedAmount };
-            }
-            return sale;
+      const updateItem = {
+        saleid: editSale.saleid,
+        ReceiptNo: editSale.ReceiptNo,
+        Rate: editSale.Rate,
+        Qty: editSale.Qty,
+        Amount: updatedAmount,
+      };
+      try {
+        const res = await axiosInstance.put("/sale/update", updateItem);
+        if (res?.data?.success) {
+          toast.success("Sale updated successfully");
+
+          setSales((prevSales) => {
+            return prevSales.map((sale) => {
+              if (sale.saleid === editSale.saleid) {
+                return { ...sale, ...editSale, Amount: updatedAmount };
+              }
+              return sale;
+            });
           });
-        });
-        setViewItems((prevSales) => {
-          return prevSales.map((sale) => {
-            if (sale.saleid === editSale.saleid) {
-              return { ...sale, ...editSale, Amount: updatedAmount };
-            }
-            return sale;
+          setViewItems((prevSales) => {
+            return prevSales.map((sale) => {
+              if (sale.saleid === editSale.saleid) {
+                return { ...sale, ...editSale, Amount: updatedAmount };
+              }
+              return sale;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("Server Error to update sale");
       }
-    } catch (error) {
-      toast.error("Server Error to update sale");
-      // console.error("Error updating sale:", error);
     }
   };
 
@@ -557,8 +567,8 @@ const CattleSaleList = () => {
                 />
               </label>
               <div>
-                <button onClick={handleSaveChanges}>Save</button>
                 <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button onClick={handleSaveChanges}>Save</button>
               </div>
             </div>
           </div>
