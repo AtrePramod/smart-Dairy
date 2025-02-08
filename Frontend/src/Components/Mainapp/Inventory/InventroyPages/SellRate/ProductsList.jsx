@@ -90,6 +90,7 @@ const ProductsList = () => {
       setItemcode(""); // Reset itemcode when itemgroupcode changes
       setFilteredList2(filteredItems); // Initialize filteredList2 with filteredItems
     } else {
+      setItemcode("");
       setFilteredList(purchaseList);
       setFilteredList2(purchaseList); // Reset both when no itemgroupcode is selected
     }
