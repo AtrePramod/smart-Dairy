@@ -26,8 +26,6 @@ import OthersMaster from "./Sales/Others/OthersMaster";
 import Centers from "./DairyInfo/Centers/Centers";
 import Profile from "./Profile/Profile";
 import SaleList from "./Inventory/InventroyPages/SaleList";
-import AddSale from "./Inventory/InventroyPages/AddSale";
-import SaleReport from "./SaleReport";
 import Dealers from "./Inventory/InventroyPages/Dealers/Dealers";
 import Products from "./Inventory/InventroyPages/Products/Products";
 import StockMaster from "./Inventory/InventroyPages/Stock/StockMaster";
@@ -35,6 +33,7 @@ import CattleFeedPurMaster from "./Purchase/CattleFeed/CattleFeedMaster";
 import GroceryPurMaster from "./Purchase/Grocery/GroceryMaster";
 import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
+import SellRate from "./Inventory/InventroyPages/SellRate/SellRate";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -59,9 +58,9 @@ const Mainappviews = ({ index }) => {
     case 2.5:
       return <SaleList />;
     case 2.6:
-      return <AddSale />;
+      return <SellRate />;
     case 2.7:
-      return <SaleReport />;
+      return <SellRate />;
     case 3:
       return <Accounts />;
     // Master Submenus

@@ -135,12 +135,12 @@ const CreateStock = () => {
     }
   }, [formData.itemgroupcode, itemList]);
   return (
-    <div className="d-flex py15 dealer">
+    <div className="d-flex ">
       <div className="bg p10 w100">
-        <span className="heading">Create Starting Stock</span>
-        <form onSubmit={handleSubmit}>
-          <div className="row d-flex sa my10 ">
-            <div className="col">
+        <span className="heading ">Create Starting Stock</span>
+        <form className="my10" onSubmit={handleSubmit}>
+          <div className="row d-flex sb ">
+            <div className="col ">
               <label className="info-text px10">
                 Date: <span className="req">*</span>
               </label>
@@ -182,9 +182,9 @@ const CreateStock = () => {
               </select>
             </div>
           </div>
-          <div className="row d-flex sa my10 ">
+          <div className="row  d-flex sb my10">
             <div className="col">
-              <label className="info-text px10">
+              <label className="info-text  ">
                 Item Name: <span className="req">*</span>
               </label>
               <select
@@ -207,7 +207,7 @@ const CreateStock = () => {
               </select>
             </div>
             <div className="col">
-              <label className="info-text px10">
+              <label className="info-text  ">
                 Qty: <span className="req">*</span>
               </label>
               <input
@@ -221,7 +221,7 @@ const CreateStock = () => {
               />
             </div>
           </div>
-          <div className="row d-flex sa my10">
+          <div className="row d-flex sb my10">
             <div className="col">
               <label className="info-text px10">
                 Rate: <span className="req">*</span>
@@ -255,7 +255,7 @@ const CreateStock = () => {
               />
             </div>
           </div>
-          <div className="row d-flex j-end my10">
+          <div className=" d-flex j-end my10">
             <div className="col">
               <button className="btn" type="submit">
                 Submit

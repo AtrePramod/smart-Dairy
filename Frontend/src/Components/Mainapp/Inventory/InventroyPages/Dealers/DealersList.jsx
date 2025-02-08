@@ -298,8 +298,8 @@ const DealersList = () => {
               />
             </label>
             <div>
-              <button onClick={handleSaveChanges}>Update</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button onClick={handleSaveChanges}>Update</button>
             </div>
           </div>
         </div>

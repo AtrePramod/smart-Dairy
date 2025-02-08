@@ -427,7 +427,7 @@ exports.getAllPurchases = async (req, res) => {
     countQuery += ` AND purchasedate BETWEEN ? AND ?`;
     queryParams.push(date1, date2);
   } else {
-    // Default date range (last 10 days)
+    // Default date range (last 1 days)
     query += ` AND DATE(purchasedate) = CURDATE()`;
     countQuery += ` AND DATE(purchasedate) = CURDATE()`;
   }
