@@ -26,7 +26,7 @@ const dairy = require("./Routes/DairyRoutes");
 const notify = require("./Routes/fireBaseRoutes");
 const sale = require("./Routes/SaleRoutes");
 const item = require("./Routes/ItemRoutes");
-const stock = require("./Routes/ItemStockMaster");
+const stock = require("./Routes/ItemStockRoutes");
 
 //Common api starting
 
