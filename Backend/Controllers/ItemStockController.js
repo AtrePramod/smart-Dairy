@@ -121,3 +121,108 @@ exports.createStock = (req, res) => {
     }
   });
 };
+
+// Delete stock record by itemcode, center_id, and dairy_id
+exports.deleteStock = (req, res) => {
+  const { dairy_id, center_id } = req.user; // Extracting user details
+  const { ItemCode } = req.body; // Getting itemcode from request
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const deleteQuery = `DELETE FROM itemStockMaster WHERE ItemCode = ? AND center_id = ? AND dairy_id = ?`;
+
+      connection.query(
+        deleteQuery,
+        [ItemCode, center_id, dairy_id],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error deleting stock record: ", err);
+            return res
+              .status(500)
+              .json({ message: "Error deleting stock record" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Stock record not found" });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: "Stock record deleted successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};
+
+// Update stock record by itemcode, center_id, and dairy_id
+exports.updateStock = (req, res) => {
+  const { dairy_id, center_id } = req.user;
+  const { ItemCode, ItemQty, ItemRate, SaleRate, Amount } = req.body;
+
+  if (!ItemCode) {
+    return res.status(400).json({ message: "ItemCode is required" });
+  }
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting MySQL connection: ", err);
+      return res.status(500).json({ message: "Database connection error" });
+    }
+
+    try {
+      const updateQuery = `
+        UPDATE itemStockMaster 
+        SET ItemQty = ?, ItemRate = ?, SaleRate = ? ,Amount=?
+        WHERE ItemCode = ? AND center_id = ? AND dairy_id = ?
+      `;
+
+      connection.query(
+        updateQuery,
+        [ItemQty, ItemRate, SaleRate, Amount, ItemCode, center_id, dairy_id],
+        (err, result) => {
+          connection.release();
+
+          if (err) {
+            console.error("Error updating stock record: ", err);
+            return res
+              .status(500)
+              .json({ message: "Error updating stock record" });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Stock record not found" });
+          }
+
+          res.status(200).json({
+            success: true,
+            message: "Stock record updated successfully",
+          });
+        }
+      );
+    } catch (error) {
+      connection.release();
+      console.error("Unexpected error: ", error);
+      return res.status(500).json({
+        success: false,
+        message: "Unexpected error occurred",
+        error: error.message,
+      });
+    }
+  });
+};

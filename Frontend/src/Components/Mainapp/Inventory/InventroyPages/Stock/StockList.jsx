@@ -27,29 +27,44 @@ const StockList = () => {
 
   //handle update product
   const handleSaveChanges = async () => {
-    const updateItem = {
-      ItemCode: editSale.ItemCode,
-      ItemName: editSale.ItemName,
-      ItemDesc: editSale.ItemDesc,
-    };
+    const result = await Swal.fire({
+      title: "Confirm Updation?",
+      text: "Are you sure you want to Update this Item?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Update it!",
+    });
 
-    try {
-      const res = await axiosInstance.put("/item/update", updateItem);
-      if (res?.data?.success) {
-        toast.success(res?.data?.message);
-        setProductList((prevCust) => {
-          return prevCust.map((item) => {
-            if (item.ItemCode === editSale.ItemCode) {
-              return { ...item, ...editSale };
-            }
-            return item;
+    if (result.isConfirmed) {
+      const amt = parseFloat(editSale.ItemQty) * parseFloat(editSale.ItemRate);
+      const updateItem = {
+        ItemCode: editSale.ItemCode,
+        ItemQty: editSale.ItemQty,
+        ItemRate: editSale.ItemRate,
+        SaleRate: editSale.SaleRate,
+        Amount: amt,
+      };
+
+      try {
+        const res = await axiosInstance.patch("/item/stock/update", updateItem);
+        if (res?.data?.success) {
+          toast.success(res?.data?.message);
+          setProductList((prevCust) => {
+            return prevCust.map((item) => {
+              if (item.ItemCode === editSale.ItemCode) {
+                return { ...item, ...editSale, Amount: amt };
+              }
+              return item;
+            });
           });
-        });
-        setIsModalOpen(false);
+          setIsModalOpen(false);
+        }
+      } catch (error) {
+        toast.error("Error in update Item to server");
+        // console.error("Error updating cust:", error);
       }
-    } catch (error) {
-      toast.error("error in update product to server");
-      // console.error("Error updating cust:", error);
     }
   };
 
@@ -80,14 +95,12 @@ const StockList = () => {
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
-  //gettingi all products
+  //getting all products
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const response = await axiosInstance.get("/item/all", {
-          params: { ItemGroupCode: filter },
-        });
-        let products = response?.data?.itemsData || [];
+        const response = await axiosInstance.get("/item/stock/all");
+        let products = response?.data?.data || [];
         // Sort products by ItemCode
         products.sort((a, b) => a.ItemCode - b.ItemCode);
         setProductList(products);
@@ -99,9 +112,9 @@ const StockList = () => {
       }
     };
     fetchProductList();
-  }, [filter]);
+  }, []);
 
-  //handle delete
+  //handle delete ny its item code
   const handleDelete = async (ItemCode) => {
     const result = await Swal.fire({
       title: "Confirm Deletion?",
@@ -115,15 +128,16 @@ const StockList = () => {
 
     if (result.isConfirmed) {
       try {
-        // console.log("saleid", id);
-        const res = await axiosInstance.post("/item/delete", { ItemCode }); // Replace with your actual API URL
+        const res = await axiosInstance.post("/item/stock/delete", {
+          ItemCode,
+        });
         toast.success(res?.data?.message);
-
-        productList((prevSales) =>
+        setProductList((prevSales) =>
           prevSales.filter((product) => product.ItemCode !== ItemCode)
         );
       } catch (error) {
-        console.error("Error deleting sale item:", error);
+        toast.error("Error deleting sale item to server");
+        // console.error("Error deleting sale item:", error);
       }
     }
   };
@@ -131,25 +145,30 @@ const StockList = () => {
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
       <div className="download-print-pdf-excel-container w100 h10 d-flex j-end">
-        <div className="w100 d-flex sa my5">
-          <select
-            name="ItemGroupCode"
-            className="data form-field"
-            onChange={handleFilterChange}
-            value={filter}
-          >
-            <option value="">Select Group Name</option>
-            {[
-              { value: 1, label: "Cattle Feed" },
-              { value: 2, label: "Medicines" },
-              { value: 3, label: "Grocery" },
-              { value: 4, label: "Other" },
-            ].map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
+        <div className="w100 d-flex sa">
+          <div>
+            <label htmlFor="seletgrop" className="mx5">
+              Select Item Group:
+            </label>
+            <select
+              name="ItemGroupCode"
+              className="data form-field"
+              onChange={handleFilterChange}
+              value={filter}
+            >
+              <option value="">Select Group Name</option>
+              {[
+                { value: 1, label: "Cattle Feed" },
+                { value: 2, label: "Medicines" },
+                { value: 3, label: "Grocery" },
+                { value: 4, label: "Other" },
+              ].map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="btn" onClick={downloadExcel}>
             <span className="f-label-text px10">Download</span>
             <FaDownload />
@@ -157,16 +176,17 @@ const StockList = () => {
         </div>
       </div>
 
-      <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg">
+      <div className="product-list-table w100 h1 d-flex-col hidescrollbar bg ">
         <span className="heading p10">Stock Report</span>
         <div className="product-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex forWidth center t-center sa">
             <span className="f-info-text w5">Sr.No.</span>
             <span className="f-info-text w5">Item Code</span>
-            {/* <span className="f-info-text w5">ItemGrpCode</span> */}
             <span className="f-info-text w15">Item Name</span>
-            <span className="f-info-text w20">Description</span>
-            {/* <span className="f-info-text w5">CompanyId</span> */}
+            <span className="f-info-text w5">Qty</span>
+            <span className="f-info-text w5">Rate</span>
+            <span className="f-info-text w5">Sale Rate</span>
+            <span className="f-info-text w5">Amount</span>
             <span className="f-info-text w5">Action</span>
           </div>
           {loading ? (
@@ -184,10 +204,11 @@ const StockList = () => {
               >
                 <span className="text w5">{index + 1}</span>
                 <span className="text w5">{product.ItemCode}</span>
-                {/* <span className="text w5">{product.ItemGroupCode}</span> */}
                 <span className="text w15 t-start">{product.ItemName}</span>
-                <span className="text w20">{product.ItemDesc}</span>
-                {/* <span className="text w5">{product.companyid}</span> */}
+                <span className="text w5">{product.ItemQty}</span>
+                <span className="text w5">{product.ItemRate}</span>
+                <span className="text w5">{product.SaleRate}</span>
+                <span className="text w5">{product.Amount}</span>
                 <span className="text w5">
                   <FaRegEdit
                     size={15}
@@ -213,28 +234,44 @@ const StockList = () => {
           <div className="modal-content">
             <h2>Update Product Details</h2>
             <label>
-              Item Name:
+              Item Name: {editSale?.ItemCode}&nbsp;{editSale?.ItemName}
+            </label>
+            <label>
+              Item Rate:
               <input
                 type="text"
-                value={editSale?.ItemName}
+                value={editSale?.ItemRate}
                 onChange={(e) =>
-                  setEditSale({ ...editSale, ItemName: e.target.value })
+                  setEditSale({ ...editSale, ItemRate: e.target.value })
+                }
+                onFocus={(e) => e.target.select()}
+              />
+            </label>
+            <label>
+              Item Qty:
+              <input
+                type="text"
+                value={editSale?.ItemQty}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) =>
+                  setEditSale({ ...editSale, ItemQty: e.target.value })
                 }
               />
             </label>{" "}
             <label>
-              Item Desc:
+              Sale Rate:
               <input
                 type="text"
-                value={editSale?.ItemDesc}
+                value={editSale?.SaleRate}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) =>
-                  setEditSale({ ...editSale, ItemDesc: e.target.value })
+                  setEditSale({ ...editSale, SaleRate: e.target.value })
                 }
               />
             </label>
             <div>
-              <button onClick={handleSaveChanges}>Update</button>
               <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button onClick={handleSaveChanges}>Update</button>
             </div>
           </div>
         </div>

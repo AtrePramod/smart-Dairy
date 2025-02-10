@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../../../App/axiosInstance";
+import { toast } from "react-toastify";
 
 // Function to get the current date
 const getTodaysDate = () => {
@@ -76,21 +77,18 @@ const CreateStock = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    console.log(newErrors);
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      console.log("Product Data Submitted: ", formData);
-      alert("Product created successfully!");
-      // API call to save data
-      // try {
-      // /item/stock/new
-      //   const res = await axiosInstance.post("/item/new", formData);
-      //   alert(res?.data?.message);
-      //   handleClear();
-      // } catch (error) {
-      //   console.error("Error creating product: ", error);
-      //   alert("There was an error creating the product.");
-      // }
+      try {
+        const res = await axiosInstance.post("/item/stock/new", formData);
+        if (res?.data?.success) {
+          toast.success(res.data?.message);
+        }
+        handleClear();
+      } catch (error) {
+        // console.error("Error creating product: ", error);
+        toast.error("There was server error creating the product.");
+      }
     }
   };
 
@@ -137,18 +135,12 @@ const CreateStock = () => {
     }
   }, [formData.itemgroupcode, itemList]);
 
-  //get item name from item code
-  const handleFindItemName = (id) => {
-    const selectedItem = itemList.find((item) => item.ItemCode === id);
-    return selectedItem?.ItemName || "Unknown Item";
-  };
   // Update item name when itemcode changes
   useEffect(() => {
     if (formData.itemcode) {
       const selectedItem = itemList.find(
-        (item) => item.ItemCode === formData.itemcode
+        (item) => item.ItemCode === parseInt(formData.itemcode)
       );
-      console.log(selectedItem);
       setFormData((prev) => ({
         ...prev,
         itemname: selectedItem ? selectedItem.ItemName : "Unknown Item",
@@ -157,140 +149,144 @@ const CreateStock = () => {
   }, [formData.itemcode, itemList]);
 
   return (
-    <div className="d-flex ">
-      <div className="bg p10 w100">
-        <span className="heading ">Create Starting Stock</span>
-        <form className="my10" onSubmit={handleSubmit}>
-          <div className="row d-flex sb ">
-            <div className="col ">
-              <label className="info-text px10">
-                Date: <span className="req">*</span>
-              </label>
-              <input
-                type="date"
-                name="purchasedate"
-                value={formData.purchasedate}
-                max={date}
-                className={`data form-field ${
-                  errors.purchasedate ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="col">
-              <label className="info-text px10">
-                Item Group Name: <span className="req">*</span>
-              </label>
-              <select
-                name="itemgroupcode"
-                value={formData.itemgroupcode}
-                className={`data form-field ${
-                  errors.itemgroupcode ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "itemgroupcode")}
-              >
-                <option value="">Item Group Name</option>
-                {[
-                  { value: 1, label: "Cattle Feed" },
-                  { value: 2, label: "Medicines" },
-                  { value: 3, label: "Grocery" },
-                  { value: 4, label: "Other" },
-                ].map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="row  d-flex sb my10">
-            <div className="col">
-              <label className="info-text  ">
-                Item Name: <span className="req">*</span>
-              </label>
-              <select
-                name="itemcode"
-                value={formData.itemcode}
-                className={`data form-field ${
-                  errors.itemcode ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "itemcode")}
-                disabled={!formData.itemgroupcode}
-              >
-                <option value="">Select Item Name</option>
-                {filteredList &&
-                  filteredList.map((item) => (
-                    <option key={item.ItemCode} value={item.ItemCode}>
-                      {item.ItemName}
+    <div className="h1 w100 d-flex center">
+      <div className="d-flex ">
+        <div className="bg p10 w100">
+          <span className="heading ">Create Starting Stock</span>
+          <form className="my10" onSubmit={handleSubmit}>
+            <div className="row d-flex sb ">
+              <div className="col ">
+                <label className="info-text px10">
+                  Date: <span className="req">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="purchasedate"
+                  value={formData.purchasedate}
+                  max={date}
+                  className={`data form-field ${
+                    errors.purchasedate ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="col">
+                <label className="info-text px10">
+                  Item Group Name: <span className="req">*</span>
+                </label>
+                <select
+                  name="itemgroupcode"
+                  value={formData.itemgroupcode}
+                  className={`data form-field ${
+                    errors.itemgroupcode ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                  onKeyDown={(e) => handleKeyDown(e, "itemgroupcode")}
+                >
+                  <option value="">Item Group Name</option>
+                  {[
+                    { value: 1, label: "Cattle Feed" },
+                    { value: 2, label: "Medicines" },
+                    { value: 3, label: "Grocery" },
+                    { value: 4, label: "Other" },
+                  ].map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
                     </option>
                   ))}
-              </select>
+                </select>
+              </div>
             </div>
-            <div className="col">
-              <label className="info-text  ">
-                Qty: <span className="req">*</span>
-              </label>
-              <input
-                name="qty"
-                type="number"
-                value={formData.qty}
-                onFocus={(e) => e.target.select()}
-                min={1}
-                className={`data form-field ${errors.qty ? "input-error" : ""}`}
-                onChange={handleInputChange}
-                onKeyDown={(e) => handleKeyDown(e, "qty")}
-                disabled={!formData.itemcode}
-              />
+            <div className="row  d-flex sb my10">
+              <div className="col">
+                <label className="info-text  ">
+                  Item Name: <span className="req">*</span>
+                </label>
+                <select
+                  name="itemcode"
+                  value={formData.itemcode}
+                  className={`data form-field ${
+                    errors.itemcode ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                  onKeyDown={(e) => handleKeyDown(e, "itemcode")}
+                  disabled={!formData.itemgroupcode}
+                >
+                  <option value="">Select Item Name</option>
+                  {filteredList &&
+                    filteredList.map((item) => (
+                      <option key={item.ItemCode} value={item.ItemCode}>
+                        {item.ItemName}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              <div className="col">
+                <label className="info-text  ">
+                  Qty: <span className="req">*</span>
+                </label>
+                <input
+                  name="qty"
+                  type="number"
+                  value={formData.qty}
+                  onFocus={(e) => e.target.select()}
+                  min={1}
+                  className={`data form-field ${
+                    errors.qty ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                  onKeyDown={(e) => handleKeyDown(e, "qty")}
+                  disabled={!formData.itemcode}
+                />
+              </div>
             </div>
-          </div>
-          <div className="row d-flex sb my10">
-            <div className="col">
-              <label className="info-text px10">
-                Rate: <span className="req">*</span>
-              </label>
-              <input
-                name="rate"
-                type="number"
-                value={formData.rate}
-                onFocus={(e) => e.target.select()}
-                onKeyDown={(e) => handleKeyDown(e, "rate")}
-                className={`data form-field ${
-                  errors.rate ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-                min={1}
-                disabled={!formData.itemcode}
-              />
+            <div className="row d-flex sb my10">
+              <div className="col">
+                <label className="info-text px10">
+                  Rate: <span className="req">*</span>
+                </label>
+                <input
+                  name="rate"
+                  type="number"
+                  value={formData.rate}
+                  onFocus={(e) => e.target.select()}
+                  onKeyDown={(e) => handleKeyDown(e, "rate")}
+                  className={`data form-field ${
+                    errors.rate ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                  min={1}
+                  disabled={!formData.itemcode}
+                />
+              </div>
+              <div className="col">
+                <label className="info-text px10">
+                  Sell Rate: <span className="req">*</span>
+                </label>
+                <input
+                  name="salerate"
+                  type="number"
+                  value={formData.salerate}
+                  onFocus={(e) => e.target.select()}
+                  min={1}
+                  className={`data form-field ${
+                    errors.salerate ? "input-error" : ""
+                  }`}
+                  onChange={handleInputChange}
+                  disabled={!formData.itemcode}
+                />
+              </div>
             </div>
-            <div className="col">
-              <label className="info-text px10">
-                Sell Rate: <span className="req">*</span>
-              </label>
-              <input
-                name="salerate"
-                type="number"
-                value={formData.salerate}
-                onFocus={(e) => e.target.select()}
-                min={1}
-                className={`data form-field ${
-                  errors.salerate ? "input-error" : ""
-                }`}
-                onChange={handleInputChange}
-                disabled={!formData.itemcode}
-              />
+            <div className=" d-flex j-end my10 wrap">
+              <button className="btn" type="button" onClick={handleClear}>
+                Clear
+              </button>
+              <button className="btn mx10" type="submit">
+                Submit
+              </button>
             </div>
-          </div>
-          <div className=" d-flex j-end my10 wrap">
-            <button className="btn" type="button" onClick={handleClear}>
-              Clear
-            </button>
-            <button className="btn mx10" type="submit">
-              Submit
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
