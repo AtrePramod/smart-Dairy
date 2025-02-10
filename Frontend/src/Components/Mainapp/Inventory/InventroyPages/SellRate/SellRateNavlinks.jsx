@@ -5,7 +5,7 @@ import { IoList } from "react-icons/io5";
 // eslint-disable-next-line react/prop-types
 const SellRateNavlinks = ({ isselected, setIsSelected }) => {
   const CustNavbuttons = [
-    { name: "Sell Product List", icon: <IoList className="icon" />, index: 0 },
+    // { name: "Sell Product List", icon: <IoList className="icon" />, index: 0 },
   ];
   return (
     <>

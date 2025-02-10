@@ -112,13 +112,13 @@ const ProductsList = () => {
   // Function to handle the update action
   const handleUpdate = async () => {
     const result = await Swal.fire({
-      title: "Confirm Deletion?",
-      text: "Are you sure you want to delete this Bill?",
+      title: "Confirm Updation?",
+      text: "Are you sure you want to Update this Sale Rate?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, Update it!",
     });
 
     if (result.isConfirmed) {
