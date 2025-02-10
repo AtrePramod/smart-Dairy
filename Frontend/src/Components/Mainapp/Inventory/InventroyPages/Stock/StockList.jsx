@@ -15,7 +15,7 @@ const StockList = () => {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
-
+  const [filteredProducts, setFilterProducts] = useState([]);
   const [editSale, setEditSale] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -91,10 +91,6 @@ const StockList = () => {
     XLSX.writeFile(wb, "Products_List.xlsx");
   };
 
-  //onchange event for filter
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
   //getting all products
   useEffect(() => {
     const fetchProductList = async () => {
@@ -141,6 +137,17 @@ const StockList = () => {
       }
     }
   };
+  //onchange event for filter
+  useEffect(() => {
+    if (filter) {
+      const filteredProducts = productList.filter(
+        (product) => parseInt(product.ItemGroupCode) === parseInt(filter)
+      );
+      setFilterProducts(filteredProducts);
+    } else {
+      setFilterProducts(productList);
+    }
+  }, [productList, filter]);
 
   return (
     <div className="product-list-container w100 h1 d-flex-col p10">
@@ -153,10 +160,10 @@ const StockList = () => {
             <select
               name="ItemGroupCode"
               className="data form-field"
-              onChange={handleFilterChange}
+              onChange={(e) => setFilter(e.target.value)}
               value={filter}
             >
-              <option value="">Select Group Name</option>
+              <option value="">All</option>
               {[
                 { value: 1, label: "Cattle Feed" },
                 { value: 2, label: "Medicines" },
@@ -191,8 +198,8 @@ const StockList = () => {
           </div>
           {loading ? (
             <Spinner />
-          ) : productList.length > 0 ? (
-            productList.map((product, index) => (
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map((product, index) => (
               <div
                 key={index}
                 className={`data-values-div w100 h10 d-flex forWidth center t-center sa ${
