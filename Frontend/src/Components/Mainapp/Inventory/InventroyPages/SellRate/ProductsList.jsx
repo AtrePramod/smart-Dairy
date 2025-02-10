@@ -4,6 +4,7 @@ import axiosInstance from "../../../../../App/axiosInstance";
 import "./SellRate.css";
 import { toast } from "react-toastify";
 import { FaRegEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const ProductsList = () => {
   const [purchaseList, setPurchaseList] = useState([]);
@@ -110,35 +111,47 @@ const ProductsList = () => {
 
   // Function to handle the update action
   const handleUpdate = async () => {
-    try {
-      const res = await axiosInstance.put("/purchase/update", {
-        purchases: [editSale],
-      });
+    const result = await Swal.fire({
+      title: "Confirm Deletion?",
+      text: "Are you sure you want to delete this Bill?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
 
-      if (res?.data?.success) {
-        toast.success("Purchase data updated successfully!");
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosInstance.put("/purchase/update", {
+          purchases: [editSale],
+        });
 
-        setPurchaseList((prevList) =>
-          prevList.map((item) =>
-            item.purchaseid === editSale.purchaseid
-              ? { ...item, ...editSale }
-              : item
-          )
-        );
-        setFilteredList2((prevList) =>
-          prevList.map((item) =>
-            item.purchaseid === editSale.purchaseid
-              ? { ...item, ...editSale }
-              : item
-          )
-        );
+        if (res?.data?.success) {
+          toast.success("Purchase data updated successfully!");
 
-        setIsModalOpen(false);
-      } else {
+          setPurchaseList((prevList) =>
+            prevList.map((item) =>
+              item.purchaseid === editSale.purchaseid
+                ? { ...item, ...editSale }
+                : item
+            )
+          );
+          setFilteredList2((prevList) =>
+            prevList.map((item) =>
+              item.purchaseid === editSale.purchaseid
+                ? { ...item, ...editSale }
+                : item
+            )
+          );
+
+          setIsModalOpen(false);
+        } else {
+          toast.error("Error updating purchase data.");
+        }
+      } catch (error) {
         toast.error("Error updating purchase data.");
       }
-    } catch (error) {
-      toast.error("Error updating purchase data.");
     }
   };
 
@@ -177,6 +190,9 @@ const ProductsList = () => {
         </div>
         <div className="w100 d-flex sa f-wrap my5">
           <div className="my5">
+            <label className="info-text px10" htmlFor="">
+              Item Group Name :
+            </label>
             <select
               name="ItemGroupCode"
               className="data form-field"
@@ -197,6 +213,9 @@ const ProductsList = () => {
             </select>
           </div>
           <div className="my5">
+            <label className="info-text px10" htmlFor="">
+              Item Name :
+            </label>
             <select
               name="ItemGroupCode"
               className="data form-field"
@@ -221,7 +240,7 @@ const ProductsList = () => {
         </div>
       </div>
       <div className="customer-list-table w100 h1 d-flex-col hidescrollbar bg">
-        <span className="heading p10">Cattle Feed Report</span>
+        <span className="heading p10">Product List</span>
         <div className="customer-heading-title-scroller w100 h1 mh100 d-flex-col">
           <div className="data-headings-div h10 d-flex center forDWidth t-center sb">
             <span className="f-info-text w5">SrNo</span>

@@ -26,6 +26,7 @@ const dairy = require("./Routes/DairyRoutes");
 const notify = require("./Routes/fireBaseRoutes");
 const sale = require("./Routes/SaleRoutes");
 const item = require("./Routes/ItemRoutes");
+const stock = require("./Routes/ItemStockMaster");
 
 //Common api starting
 
@@ -38,5 +39,6 @@ app.use("/smartdairy/api", dairy);
 app.use("/smartdairy/api", notify);
 app.use("/smartdairy/api", sale);
 app.use("/smartdairy/api", item);
+app.use("/smartdairy/api", stock);
 
 module.exports = app;

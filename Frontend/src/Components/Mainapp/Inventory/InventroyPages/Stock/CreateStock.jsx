@@ -52,10 +52,9 @@ const CreateStock = () => {
       const updatedData = { ...prev, [name]: value };
 
       if (name === "qty" || name === "rate") {
-        updatedData.amount =
-          updatedData.qty && updatedData.rate
-            ? updatedData.qty * updatedData.rate
-            : 0;
+        const qty = parseFloat(updatedData.qty) || 0;
+        const rate = parseFloat(updatedData.rate) || 0;
+        updatedData.amount = qty * rate;
       }
 
       return updatedData;
@@ -77,12 +76,14 @@ const CreateStock = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
+    console.log(newErrors);
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       console.log("Product Data Submitted: ", formData);
       alert("Product created successfully!");
       // API call to save data
       // try {
+      // /item/stock/new
       //   const res = await axiosInstance.post("/item/new", formData);
       //   alert(res?.data?.message);
       //   handleClear();
@@ -97,6 +98,7 @@ const CreateStock = () => {
   const handleKeyDown = (e, fieldName) => {
     if (e.key === "Enter") {
       e.preventDefault();
+
       const formElements = document.querySelectorAll(".form-field");
       const currentIndex = [...formElements].findIndex(
         (el) => el.name === fieldName
@@ -134,6 +136,26 @@ const CreateStock = () => {
       setFilteredList(itemList);
     }
   }, [formData.itemgroupcode, itemList]);
+
+  //get item name from item code
+  const handleFindItemName = (id) => {
+    const selectedItem = itemList.find((item) => item.ItemCode === id);
+    return selectedItem?.ItemName || "Unknown Item";
+  };
+  // Update item name when itemcode changes
+  useEffect(() => {
+    if (formData.itemcode) {
+      const selectedItem = itemList.find(
+        (item) => item.ItemCode === formData.itemcode
+      );
+      console.log(selectedItem);
+      setFormData((prev) => ({
+        ...prev,
+        itemname: selectedItem ? selectedItem.ItemName : "Unknown Item",
+      }));
+    }
+  }, [formData.itemcode, itemList]);
+
   return (
     <div className="d-flex ">
       <div className="bg p10 w100">
@@ -214,9 +236,11 @@ const CreateStock = () => {
                 name="qty"
                 type="number"
                 value={formData.qty}
+                onFocus={(e) => e.target.select()}
                 min={1}
                 className={`data form-field ${errors.qty ? "input-error" : ""}`}
                 onChange={handleInputChange}
+                onKeyDown={(e) => handleKeyDown(e, "qty")}
                 disabled={!formData.itemcode}
               />
             </div>
@@ -230,6 +254,8 @@ const CreateStock = () => {
                 name="rate"
                 type="number"
                 value={formData.rate}
+                onFocus={(e) => e.target.select()}
+                onKeyDown={(e) => handleKeyDown(e, "rate")}
                 className={`data form-field ${
                   errors.rate ? "input-error" : ""
                 }`}
@@ -246,6 +272,7 @@ const CreateStock = () => {
                 name="salerate"
                 type="number"
                 value={formData.salerate}
+                onFocus={(e) => e.target.select()}
                 min={1}
                 className={`data form-field ${
                   errors.salerate ? "input-error" : ""
@@ -255,17 +282,13 @@ const CreateStock = () => {
               />
             </div>
           </div>
-          <div className=" d-flex j-end my10">
-            <div className="col">
-              <button className="btn" type="submit">
-                Submit
-              </button>
-            </div>
-            <div className="col">
-              <button className="btn" type="button" onClick={handleClear}>
-                Clear
-              </button>
-            </div>
+          <div className=" d-flex j-end my10 wrap">
+            <button className="btn" type="button" onClick={handleClear}>
+              Clear
+            </button>
+            <button className="btn mx10" type="submit">
+              Submit
+            </button>
           </div>
         </form>
       </div>
