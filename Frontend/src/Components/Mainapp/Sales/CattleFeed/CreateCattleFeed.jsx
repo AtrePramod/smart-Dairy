@@ -117,6 +117,7 @@ const CreateCattleFeed = () => {
         ItemGroupCode: 1, // update grpcode
         Rate: rate,
         Amount: qty * rate,
+        cn: 0,
       };
 
       // Update the cart items
