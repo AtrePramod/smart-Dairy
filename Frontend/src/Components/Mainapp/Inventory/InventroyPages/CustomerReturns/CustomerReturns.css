@@ -1,0 +1,9 @@
+@media screen and (max-width: 426px) {
+  .cust-return {
+    flex-direction: column;
+  }
+  .custCol {
+    width: 100%;
+    margin: 10px;
+  }
+}

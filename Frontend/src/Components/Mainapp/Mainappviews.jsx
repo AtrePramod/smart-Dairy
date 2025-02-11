@@ -34,6 +34,7 @@ import GroceryPurMaster from "./Purchase/Grocery/GroceryMaster";
 import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
 import SellRate from "./Inventory/InventroyPages/SellRate/SellRate";
+import CustomerReturns from "./Inventory/InventroyPages/CustomerReturns/CustomerReturns";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -56,7 +57,7 @@ const Mainappviews = ({ index }) => {
     case 2.4:
       return <StartingStockInfo />;
     case 2.5:
-      return <SaleList />;
+      return <CustomerReturns />;
     case 2.6:
       return <SellRate />;
     case 2.7:
