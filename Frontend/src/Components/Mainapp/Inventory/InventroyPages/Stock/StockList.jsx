@@ -82,13 +82,16 @@ const StockList = () => {
       "Sr. No.": index + 1,
       "Item Code": product.ItemCode,
       "Item Name": product.ItemName,
-      Description: product.ItemDesc,
+      Qty: product.ItemQty,
+      Rate: product.ItemRate,
+      "Sale Rate": product.SaleRate,
+      Amount: product.Amount,
     }));
 
     const ws = XLSX.utils.json_to_sheet(dataToExport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Products");
-    XLSX.writeFile(wb, "Products_List.xlsx");
+    XLSX.writeFile(wb, "Stock_List.xlsx");
   };
 
   //getting all products
