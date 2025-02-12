@@ -104,9 +104,7 @@ const List = () => {
     // console.log(getItem);
     try {
       const queryParams = new URLSearchParams(getItem).toString();
-      const { data } = await axiosInstance.get(
-        `/sale/all?ItemGroupCode=1&${queryParams}`
-      );
+      const { data } = await axiosInstance.get(`/sale/all?cn=1&${queryParams}`);
       if (data?.success) {
         setSales(data.salesData);
       }
