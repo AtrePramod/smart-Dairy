@@ -35,6 +35,7 @@ import MedicinesPurMaster from "./Purchase/Medicines/MedicinesMaster";
 import OthersPurMaster from "./Purchase/Others/OthersPurMaster";
 import SellRate from "./Inventory/InventroyPages/SellRate/SellRate";
 import CustomerReturns from "./Inventory/InventroyPages/CustomerReturns/CustomerReturns";
+import DealerReturns from "./Inventory/InventroyPages/DealerReturns/DealerReturns";
 // import MilkReports from "./Reports/MilkReports/MilkReports";
 // import MilkcollectionReports from "./Reports/MilkReports/MilkcollectionReports";
 
@@ -59,7 +60,7 @@ const Mainappviews = ({ index }) => {
     case 2.5:
       return <CustomerReturns />;
     case 2.6:
-      return <SellRate />;
+      return <DealerReturns />;
     case 2.7:
       return <SellRate />;
     case 3:
